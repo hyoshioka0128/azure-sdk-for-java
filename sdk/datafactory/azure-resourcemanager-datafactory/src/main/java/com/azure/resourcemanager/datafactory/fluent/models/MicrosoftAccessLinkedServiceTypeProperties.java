@@ -9,19 +9,19 @@ import com.azure.core.util.logging.ClientLogger;
 import com.azure.resourcemanager.datafactory.models.SecretBase;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Microsoft Access linked service properties. */
+/**
+ * Microsoft Access linked service properties.
+ */
 @Fluent
 public final class MicrosoftAccessLinkedServiceTypeProperties {
     /*
-     * The non-access credential portion of the connection string as well as an optional encrypted credential. Type:
-     * string, SecureString or AzureKeyVaultSecretReference.
+     * The non-access credential portion of the connection string as well as an optional encrypted credential. Type: string, or SecureString, or AzureKeyVaultSecretReference, or Expression with resultType string.
      */
     @JsonProperty(value = "connectionString", required = true)
     private Object connectionString;
 
     /*
-     * Type of authentication used to connect to the Microsoft Access as ODBC data store. Possible values are:
-     * Anonymous and Basic. Type: string (or Expression with resultType string).
+     * Type of authentication used to connect to the Microsoft Access as ODBC data store. Possible values are: Anonymous and Basic. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "authenticationType")
     private Object authenticationType;
@@ -45,20 +45,22 @@ public final class MicrosoftAccessLinkedServiceTypeProperties {
     private SecretBase password;
 
     /*
-     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime
-     * credential manager. Type: string (or Expression with resultType string).
+     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string.
      */
     @JsonProperty(value = "encryptedCredential")
-    private Object encryptedCredential;
+    private String encryptedCredential;
 
-    /** Creates an instance of MicrosoftAccessLinkedServiceTypeProperties class. */
+    /**
+     * Creates an instance of MicrosoftAccessLinkedServiceTypeProperties class.
+     */
     public MicrosoftAccessLinkedServiceTypeProperties() {
     }
 
     /**
      * Get the connectionString property: The non-access credential portion of the connection string as well as an
-     * optional encrypted credential. Type: string, SecureString or AzureKeyVaultSecretReference.
-     *
+     * optional encrypted credential. Type: string, or SecureString, or AzureKeyVaultSecretReference, or Expression with
+     * resultType string.
+     * 
      * @return the connectionString value.
      */
     public Object connectionString() {
@@ -67,8 +69,9 @@ public final class MicrosoftAccessLinkedServiceTypeProperties {
 
     /**
      * Set the connectionString property: The non-access credential portion of the connection string as well as an
-     * optional encrypted credential. Type: string, SecureString or AzureKeyVaultSecretReference.
-     *
+     * optional encrypted credential. Type: string, or SecureString, or AzureKeyVaultSecretReference, or Expression with
+     * resultType string.
+     * 
      * @param connectionString the connectionString value to set.
      * @return the MicrosoftAccessLinkedServiceTypeProperties object itself.
      */
@@ -80,7 +83,7 @@ public final class MicrosoftAccessLinkedServiceTypeProperties {
     /**
      * Get the authenticationType property: Type of authentication used to connect to the Microsoft Access as ODBC data
      * store. Possible values are: Anonymous and Basic. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the authenticationType value.
      */
     public Object authenticationType() {
@@ -90,7 +93,7 @@ public final class MicrosoftAccessLinkedServiceTypeProperties {
     /**
      * Set the authenticationType property: Type of authentication used to connect to the Microsoft Access as ODBC data
      * store. Possible values are: Anonymous and Basic. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param authenticationType the authenticationType value to set.
      * @return the MicrosoftAccessLinkedServiceTypeProperties object itself.
      */
@@ -102,7 +105,7 @@ public final class MicrosoftAccessLinkedServiceTypeProperties {
     /**
      * Get the credential property: The access credential portion of the connection string specified in driver-specific
      * property-value format.
-     *
+     * 
      * @return the credential value.
      */
     public SecretBase credential() {
@@ -112,7 +115,7 @@ public final class MicrosoftAccessLinkedServiceTypeProperties {
     /**
      * Set the credential property: The access credential portion of the connection string specified in driver-specific
      * property-value format.
-     *
+     * 
      * @param credential the credential value to set.
      * @return the MicrosoftAccessLinkedServiceTypeProperties object itself.
      */
@@ -124,7 +127,7 @@ public final class MicrosoftAccessLinkedServiceTypeProperties {
     /**
      * Get the username property: User name for Basic authentication. Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @return the username value.
      */
     public Object username() {
@@ -134,7 +137,7 @@ public final class MicrosoftAccessLinkedServiceTypeProperties {
     /**
      * Set the username property: User name for Basic authentication. Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @param username the username value to set.
      * @return the MicrosoftAccessLinkedServiceTypeProperties object itself.
      */
@@ -145,7 +148,7 @@ public final class MicrosoftAccessLinkedServiceTypeProperties {
 
     /**
      * Get the password property: Password for Basic authentication.
-     *
+     * 
      * @return the password value.
      */
     public SecretBase password() {
@@ -154,7 +157,7 @@ public final class MicrosoftAccessLinkedServiceTypeProperties {
 
     /**
      * Set the password property: Password for Basic authentication.
-     *
+     * 
      * @param password the password value to set.
      * @return the MicrosoftAccessLinkedServiceTypeProperties object itself.
      */
@@ -165,38 +168,36 @@ public final class MicrosoftAccessLinkedServiceTypeProperties {
 
     /**
      * Get the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @return the encryptedCredential value.
      */
-    public Object encryptedCredential() {
+    public String encryptedCredential() {
         return this.encryptedCredential;
     }
 
     /**
      * Set the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @param encryptedCredential the encryptedCredential value to set.
      * @return the MicrosoftAccessLinkedServiceTypeProperties object itself.
      */
-    public MicrosoftAccessLinkedServiceTypeProperties withEncryptedCredential(Object encryptedCredential) {
+    public MicrosoftAccessLinkedServiceTypeProperties withEncryptedCredential(String encryptedCredential) {
         this.encryptedCredential = encryptedCredential;
         return this;
     }
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (connectionString() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property connectionString in model"
-                            + " MicrosoftAccessLinkedServiceTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property connectionString in model MicrosoftAccessLinkedServiceTypeProperties"));
         }
         if (credential() != null) {
             credential().validate();

@@ -7,7 +7,7 @@ package com.azure.communication.callautomation.implementation.models;
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Contract model of an ACS call participant. */
+/** A call participant. */
 @Fluent
 public final class CallParticipantInternal {
     /*
@@ -21,6 +21,12 @@ public final class CallParticipantInternal {
      */
     @JsonProperty(value = "isMuted")
     private Boolean isMuted;
+
+    /*
+     * Is participant on hold.
+     */
+    @JsonProperty(value = "isOnHold")
+    private Boolean isOnHold;
 
     /**
      * Get the identifier property: Communication identifier of the participant.
@@ -59,6 +65,26 @@ public final class CallParticipantInternal {
      */
     public CallParticipantInternal setIsMuted(Boolean isMuted) {
         this.isMuted = isMuted;
+        return this;
+    }
+
+    /**
+     * Get the isOnHold property: Is participant on hold.
+     *
+     * @return the isOnHold value.
+     */
+    public Boolean isOnHold() {
+        return this.isOnHold;
+    }
+
+    /**
+     * Set the isOnHold property: Is participant on hold.
+     *
+     * @param isOnHold the isOnHold value to set.
+     * @return the CallParticipantInternal object itself.
+     */
+    public CallParticipantInternal setIsOnHold(Boolean isOnHold) {
+        this.isOnHold = isOnHold;
         return this;
     }
 }

@@ -6,9 +6,12 @@ package com.azure.resourcemanager.storage.models;
 
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
-/** Metric specification of operation. */
+/**
+ * Metric specification of operation.
+ */
 @Fluent
 public final class MetricSpecification {
     /*
@@ -64,6 +67,12 @@ public final class MetricSpecification {
      */
     @JsonProperty(value = "resourceIdDimensionNameOverride")
     private String resourceIdDimensionNameOverride;
+
+    /**
+     * Creates an instance of MetricSpecification class.
+     */
+    public MetricSpecification() {
+    }
 
     /**
      * Get the name property: Name of metric specification.

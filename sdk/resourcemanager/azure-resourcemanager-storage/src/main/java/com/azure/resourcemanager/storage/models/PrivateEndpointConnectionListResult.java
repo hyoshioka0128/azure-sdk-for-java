@@ -7,9 +7,12 @@ package com.azure.resourcemanager.storage.models;
 import com.azure.core.annotation.Fluent;
 import com.azure.resourcemanager.storage.fluent.models.PrivateEndpointConnectionInner;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
-/** List of private endpoint connection associated with the specified storage account. */
+/**
+ * List of private endpoint connection associated with the specified storage account.
+ */
 @Fluent
 public final class PrivateEndpointConnectionListResult {
     /*
@@ -17,6 +20,12 @@ public final class PrivateEndpointConnectionListResult {
      */
     @JsonProperty(value = "value")
     private List<PrivateEndpointConnectionInner> value;
+
+    /**
+     * Creates an instance of PrivateEndpointConnectionListResult class.
+     */
+    public PrivateEndpointConnectionListResult() {
+    }
 
     /**
      * Get the value property: Array of private endpoint connections.

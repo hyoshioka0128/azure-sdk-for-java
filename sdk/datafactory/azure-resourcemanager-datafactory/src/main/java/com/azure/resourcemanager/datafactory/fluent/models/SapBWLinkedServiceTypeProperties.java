@@ -9,7 +9,9 @@ import com.azure.core.util.logging.ClientLogger;
 import com.azure.resourcemanager.datafactory.models.SecretBase;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Properties specific to this linked service type. */
+/**
+ * Properties specific to this linked service type.
+ */
 @Fluent
 public final class SapBWLinkedServiceTypeProperties {
     /*
@@ -19,15 +21,13 @@ public final class SapBWLinkedServiceTypeProperties {
     private Object server;
 
     /*
-     * System number of the BW system. (Usually a two-digit decimal number represented as a string.) Type: string (or
-     * Expression with resultType string).
+     * System number of the BW system. (Usually a two-digit decimal number represented as a string.) Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "systemNumber", required = true)
     private Object systemNumber;
 
     /*
-     * Client ID of the client on the BW system. (Usually a three-digit decimal number represented as a string) Type:
-     * string (or Expression with resultType string).
+     * Client ID of the client on the BW system. (Usually a three-digit decimal number represented as a string) Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "clientId", required = true)
     private Object clientId;
@@ -45,19 +45,20 @@ public final class SapBWLinkedServiceTypeProperties {
     private SecretBase password;
 
     /*
-     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime
-     * credential manager. Type: string (or Expression with resultType string).
+     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string.
      */
     @JsonProperty(value = "encryptedCredential")
-    private Object encryptedCredential;
+    private String encryptedCredential;
 
-    /** Creates an instance of SapBWLinkedServiceTypeProperties class. */
+    /**
+     * Creates an instance of SapBWLinkedServiceTypeProperties class.
+     */
     public SapBWLinkedServiceTypeProperties() {
     }
 
     /**
      * Get the server property: Host name of the SAP BW instance. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the server value.
      */
     public Object server() {
@@ -66,7 +67,7 @@ public final class SapBWLinkedServiceTypeProperties {
 
     /**
      * Set the server property: Host name of the SAP BW instance. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param server the server value to set.
      * @return the SapBWLinkedServiceTypeProperties object itself.
      */
@@ -78,7 +79,7 @@ public final class SapBWLinkedServiceTypeProperties {
     /**
      * Get the systemNumber property: System number of the BW system. (Usually a two-digit decimal number represented as
      * a string.) Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the systemNumber value.
      */
     public Object systemNumber() {
@@ -88,7 +89,7 @@ public final class SapBWLinkedServiceTypeProperties {
     /**
      * Set the systemNumber property: System number of the BW system. (Usually a two-digit decimal number represented as
      * a string.) Type: string (or Expression with resultType string).
-     *
+     * 
      * @param systemNumber the systemNumber value to set.
      * @return the SapBWLinkedServiceTypeProperties object itself.
      */
@@ -100,7 +101,7 @@ public final class SapBWLinkedServiceTypeProperties {
     /**
      * Get the clientId property: Client ID of the client on the BW system. (Usually a three-digit decimal number
      * represented as a string) Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the clientId value.
      */
     public Object clientId() {
@@ -110,7 +111,7 @@ public final class SapBWLinkedServiceTypeProperties {
     /**
      * Set the clientId property: Client ID of the client on the BW system. (Usually a three-digit decimal number
      * represented as a string) Type: string (or Expression with resultType string).
-     *
+     * 
      * @param clientId the clientId value to set.
      * @return the SapBWLinkedServiceTypeProperties object itself.
      */
@@ -122,7 +123,7 @@ public final class SapBWLinkedServiceTypeProperties {
     /**
      * Get the username property: Username to access the SAP BW server. Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @return the username value.
      */
     public Object username() {
@@ -132,7 +133,7 @@ public final class SapBWLinkedServiceTypeProperties {
     /**
      * Set the username property: Username to access the SAP BW server. Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @param username the username value to set.
      * @return the SapBWLinkedServiceTypeProperties object itself.
      */
@@ -143,7 +144,7 @@ public final class SapBWLinkedServiceTypeProperties {
 
     /**
      * Get the password property: Password to access the SAP BW server.
-     *
+     * 
      * @return the password value.
      */
     public SecretBase password() {
@@ -152,7 +153,7 @@ public final class SapBWLinkedServiceTypeProperties {
 
     /**
      * Set the password property: Password to access the SAP BW server.
-     *
+     * 
      * @param password the password value to set.
      * @return the SapBWLinkedServiceTypeProperties object itself.
      */
@@ -163,49 +164,46 @@ public final class SapBWLinkedServiceTypeProperties {
 
     /**
      * Get the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @return the encryptedCredential value.
      */
-    public Object encryptedCredential() {
+    public String encryptedCredential() {
         return this.encryptedCredential;
     }
 
     /**
      * Set the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @param encryptedCredential the encryptedCredential value to set.
      * @return the SapBWLinkedServiceTypeProperties object itself.
      */
-    public SapBWLinkedServiceTypeProperties withEncryptedCredential(Object encryptedCredential) {
+    public SapBWLinkedServiceTypeProperties withEncryptedCredential(String encryptedCredential) {
         this.encryptedCredential = encryptedCredential;
         return this;
     }
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (server() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property server in model SapBWLinkedServiceTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property server in model SapBWLinkedServiceTypeProperties"));
         }
         if (systemNumber() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property systemNumber in model SapBWLinkedServiceTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property systemNumber in model SapBWLinkedServiceTypeProperties"));
         }
         if (clientId() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property clientId in model SapBWLinkedServiceTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property clientId in model SapBWLinkedServiceTypeProperties"));
         }
         if (password() != null) {
             password().validate();

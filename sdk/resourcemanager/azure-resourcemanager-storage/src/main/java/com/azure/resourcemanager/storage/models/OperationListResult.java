@@ -7,6 +7,7 @@ package com.azure.resourcemanager.storage.models;
 import com.azure.core.annotation.Fluent;
 import com.azure.resourcemanager.storage.fluent.models.OperationInner;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 /**
@@ -20,6 +21,12 @@ public final class OperationListResult {
      */
     @JsonProperty(value = "value")
     private List<OperationInner> value;
+
+    /**
+     * Creates an instance of OperationListResult class.
+     */
+    public OperationListResult() {
+    }
 
     /**
      * Get the value property: List of Storage operations supported by the Storage resource provider.

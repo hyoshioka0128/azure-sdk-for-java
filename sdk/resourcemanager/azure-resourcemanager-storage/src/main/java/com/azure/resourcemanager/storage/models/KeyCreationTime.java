@@ -6,9 +6,12 @@ package com.azure.resourcemanager.storage.models;
 
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.OffsetDateTime;
 
-/** Storage account keys creation time. */
+/**
+ * Storage account keys creation time.
+ */
 @Fluent
 public final class KeyCreationTime {
     /*
@@ -22,6 +25,12 @@ public final class KeyCreationTime {
      */
     @JsonProperty(value = "key2")
     private OffsetDateTime key2;
+
+    /**
+     * Creates an instance of KeyCreationTime class.
+     */
+    public KeyCreationTime() {
+    }
 
     /**
      * Get the key1 property: The key1 property.

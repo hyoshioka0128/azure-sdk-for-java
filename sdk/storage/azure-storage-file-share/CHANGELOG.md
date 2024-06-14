@@ -1,6 +1,6 @@
 # Release History
 
-## 12.19.0-beta.2 (Unreleased)
+## 12.23.0-beta.2 (Unreleased)
 
 ### Features Added
 
@@ -9,6 +9,136 @@
 ### Bugs Fixed
 
 ### Other Changes
+
+## 12.23.0-beta.1 (2024-06-11)
+
+### Features Added
+- Added support for snapshot management on NFS shares.
+- Added authorization error details in responses.
+- Added support for service version 2024-08-04.
+
+## 12.22.1 (2024-06-06)
+
+### Other Changes
+
+#### Dependency Updates
+- Upgraded `azure-core` from `1.49.0` to version `1.49.1`.
+- Upgraded `azure-core-http-netty` from `1.15.0` to version `1.15.1`.
+- Upgraded `azure-storage-common` from `12.25.0` to version `12.25.1`.
+
+## 12.22.0 (2024-05-15)
+
+### Features Added
+- Added support for service versions 2024-02-04 and 2024-05-04.
+- Added `clientName` property on `HandleItem` that specifies the name of the client machine where the share is being mounted.
+- Added rename support for `listRange` API via `supportRename` in `ShareFileListRangesDiffOptions`.
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core` from `1.48.0` to version `1.49.0`.
+- Upgraded `azure-core-http-netty` from `1.14.2` to version `1.15.0`.
+- Upgraded `azure-storage-common` from `12.25.0-beta.2` to version `12.25.0`.
+
+
+## 12.21.4 (2024-04-23)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core` from `1.47.0` to version `1.48.0`.
+- Upgraded `azure-core-http-netty` from `1.14.1` to version `1.14.2`.
+- Upgraded `azure-storage-common` from `12.24.3` to version `12.25.0-beta.2`.
+
+
+## 12.22.0-beta.1 (2024-04-15)
+
+### Features Added
+- Added support for service versions 2024-02-04 and 2024-05-04.
+- Added `clientName` property on `HandleItem` that specifies the name of the client machine where the share is being mounted.
+- Added rename support for `listRange` API via `supportRename` in `ShareFileListRangesDiffOptions`.
+
+## 12.21.3 (2024-03-20)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-storage-common` from `12.24.2` to version `12.24.3`.
+- Upgraded `azure-core` from `1.46.0` to version `1.47.0`.
+- Upgraded `azure-core-http-netty` from `1.14.0` to version `1.14.1`.
+
+
+## 12.21.2 (2024-02-22)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-storage-common` from `12.24.1` to version `12.24.2`.
+- Upgraded `azure-core` from `1.45.1` to version `1.46.0`.
+- Upgraded `azure-core-http-netty` from `1.13.11` to version `1.14.0`.
+
+
+## 12.21.1 (2023-12-04)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-storage-common` from `12.24.0` to version `12.24.1`.
+- Upgraded `azure-core-http-netty` from `1.13.10` to version `1.13.11`.
+- Upgraded `azure-core` from `1.45.0` to version `1.45.1`.
+
+## 12.21.0 (2023-11-08)
+
+### Features Added
+- Added support for service versions 2023-11-03.
+- Added support for ShareAudience.
+
+## 12.20.1 (2023-10-24)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-storage-common` from `12.23.0` to version `12.23.1`.
+- Upgraded `azure-core-http-netty` from `1.13.7` to version `1.13.9`.
+- Upgraded `azure-core` from `1.43.0` to version `1.44.1`.
+
+## 12.21.0-beta.1 (2023-10-19)
+
+### Features Added
+- Added support for service versions 2023-11-03.
+- Added support for ShareAudience.
+
+## 12.20.0 (2023-09-12)
+
+### Features Added
+- Added support for service versions 2023-05-03 and 2023-08-03.
+
+## 12.19.1 (2023-08-18)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-storage-common` from `12.22.0` to version `12.22.1`.
+- Upgraded `azure-core-http-netty` from `1.13.5` to version `1.13.6`.
+- Upgraded `azure-core` from `1.41.0` to version `1.42.0`.
+
+## 12.20.0-beta.1 (2023-08-08)
+
+### Features Added
+- Added support for service versions 2023-05-03 and 2023-08-03.
+
+## 12.19.0 (2023-07-11)
+
+### Features Added
+- Added support for the `2023-01-03` service version.
+- Added `ShareFileHandleAccessRights` property on `HandleItem` that specifies access rights for a file handle.
 
 ## 12.18.2 (2023-06-14)
 
@@ -25,6 +155,7 @@
 ### Features Added
 - Added support for 2023-01-03 service version.
 - Added `ShareFileHandleAccessRights` property on `HandleItem` that specifies access rights for a file handle.
+
 ## 12.18.1 (2023-05-23)
 
 ### Other Changes

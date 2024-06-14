@@ -10,7 +10,9 @@ import com.azure.resourcemanager.datafactory.models.SecretBase;
 import com.azure.resourcemanager.datafactory.models.SqlAlwaysEncryptedProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** SQL Server linked service properties. */
+/**
+ * SQL Server linked service properties.
+ */
 @Fluent
 public final class SqlServerLinkedServiceTypeProperties {
     /*
@@ -32,11 +34,10 @@ public final class SqlServerLinkedServiceTypeProperties {
     private SecretBase password;
 
     /*
-     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime
-     * credential manager. Type: string (or Expression with resultType string).
+     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string.
      */
     @JsonProperty(value = "encryptedCredential")
-    private Object encryptedCredential;
+    private String encryptedCredential;
 
     /*
      * Sql always encrypted properties.
@@ -44,14 +45,16 @@ public final class SqlServerLinkedServiceTypeProperties {
     @JsonProperty(value = "alwaysEncryptedSettings")
     private SqlAlwaysEncryptedProperties alwaysEncryptedSettings;
 
-    /** Creates an instance of SqlServerLinkedServiceTypeProperties class. */
+    /**
+     * Creates an instance of SqlServerLinkedServiceTypeProperties class.
+     */
     public SqlServerLinkedServiceTypeProperties() {
     }
 
     /**
      * Get the connectionString property: The connection string. Type: string, SecureString or
      * AzureKeyVaultSecretReference.
-     *
+     * 
      * @return the connectionString value.
      */
     public Object connectionString() {
@@ -61,7 +64,7 @@ public final class SqlServerLinkedServiceTypeProperties {
     /**
      * Set the connectionString property: The connection string. Type: string, SecureString or
      * AzureKeyVaultSecretReference.
-     *
+     * 
      * @param connectionString the connectionString value to set.
      * @return the SqlServerLinkedServiceTypeProperties object itself.
      */
@@ -73,7 +76,7 @@ public final class SqlServerLinkedServiceTypeProperties {
     /**
      * Get the username property: The on-premises Windows authentication user name. Type: string (or Expression with
      * resultType string).
-     *
+     * 
      * @return the username value.
      */
     public Object username() {
@@ -83,7 +86,7 @@ public final class SqlServerLinkedServiceTypeProperties {
     /**
      * Set the username property: The on-premises Windows authentication user name. Type: string (or Expression with
      * resultType string).
-     *
+     * 
      * @param username the username value to set.
      * @return the SqlServerLinkedServiceTypeProperties object itself.
      */
@@ -94,7 +97,7 @@ public final class SqlServerLinkedServiceTypeProperties {
 
     /**
      * Get the password property: The on-premises Windows authentication password.
-     *
+     * 
      * @return the password value.
      */
     public SecretBase password() {
@@ -103,7 +106,7 @@ public final class SqlServerLinkedServiceTypeProperties {
 
     /**
      * Set the password property: The on-premises Windows authentication password.
-     *
+     * 
      * @param password the password value to set.
      * @return the SqlServerLinkedServiceTypeProperties object itself.
      */
@@ -114,29 +117,29 @@ public final class SqlServerLinkedServiceTypeProperties {
 
     /**
      * Get the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @return the encryptedCredential value.
      */
-    public Object encryptedCredential() {
+    public String encryptedCredential() {
         return this.encryptedCredential;
     }
 
     /**
      * Set the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @param encryptedCredential the encryptedCredential value to set.
      * @return the SqlServerLinkedServiceTypeProperties object itself.
      */
-    public SqlServerLinkedServiceTypeProperties withEncryptedCredential(Object encryptedCredential) {
+    public SqlServerLinkedServiceTypeProperties withEncryptedCredential(String encryptedCredential) {
         this.encryptedCredential = encryptedCredential;
         return this;
     }
 
     /**
      * Get the alwaysEncryptedSettings property: Sql always encrypted properties.
-     *
+     * 
      * @return the alwaysEncryptedSettings value.
      */
     public SqlAlwaysEncryptedProperties alwaysEncryptedSettings() {
@@ -145,27 +148,26 @@ public final class SqlServerLinkedServiceTypeProperties {
 
     /**
      * Set the alwaysEncryptedSettings property: Sql always encrypted properties.
-     *
+     * 
      * @param alwaysEncryptedSettings the alwaysEncryptedSettings value to set.
      * @return the SqlServerLinkedServiceTypeProperties object itself.
      */
-    public SqlServerLinkedServiceTypeProperties withAlwaysEncryptedSettings(
-        SqlAlwaysEncryptedProperties alwaysEncryptedSettings) {
+    public SqlServerLinkedServiceTypeProperties
+        withAlwaysEncryptedSettings(SqlAlwaysEncryptedProperties alwaysEncryptedSettings) {
         this.alwaysEncryptedSettings = alwaysEncryptedSettings;
         return this;
     }
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (connectionString() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property connectionString in model SqlServerLinkedServiceTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property connectionString in model SqlServerLinkedServiceTypeProperties"));
         }
         if (password() != null) {
             password().validate();

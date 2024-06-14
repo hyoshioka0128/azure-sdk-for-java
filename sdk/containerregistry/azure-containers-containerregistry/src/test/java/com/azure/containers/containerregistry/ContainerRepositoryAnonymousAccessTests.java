@@ -8,6 +8,8 @@ import com.azure.core.test.http.AssertingHttpClientBuilder;
 import com.azure.identity.AzureAuthorityHosts;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -19,10 +21,10 @@ import static com.azure.containers.containerregistry.TestUtils.ANONYMOUS_REGISTR
 import static com.azure.containers.containerregistry.TestUtils.ANONYMOUS_REGISTRY_NAME;
 import static com.azure.containers.containerregistry.TestUtils.DISPLAY_NAME_WITH_ARGUMENTS;
 import static com.azure.containers.containerregistry.TestUtils.HELLO_WORLD_REPOSITORY_NAME;
-import static com.azure.containers.containerregistry.TestUtils.SKIP_AUTH_TOKEN_REQUEST_FUNCTION;
 import static com.azure.containers.containerregistry.TestUtils.getAuthority;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Execution(ExecutionMode.SAME_THREAD)
 public class ContainerRepositoryAnonymousAccessTests extends ContainerRegistryClientsTestBase {
     @BeforeEach
     void beforeEach() throws InterruptedException {
@@ -31,7 +33,6 @@ public class ContainerRepositoryAnonymousAccessTests extends ContainerRegistryCl
 
     private HttpClient buildSyncAssertingClient(HttpClient httpClient) {
         return new AssertingHttpClientBuilder(httpClient)
-            .skipRequest(SKIP_AUTH_TOKEN_REQUEST_FUNCTION)
             .assertSync()
             .build();
     }

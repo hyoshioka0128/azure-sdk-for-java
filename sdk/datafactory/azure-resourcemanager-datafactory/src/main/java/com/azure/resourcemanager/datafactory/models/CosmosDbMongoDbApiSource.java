@@ -6,17 +6,30 @@ package com.azure.resourcemanager.datafactory.models;
 
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-/** A copy activity source for a CosmosDB (MongoDB API) database. */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+/**
+ * A copy activity source for a CosmosDB (MongoDB API) database.
+ */
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    property = "type",
+    defaultImpl = CosmosDbMongoDbApiSource.class,
+    visible = true)
 @JsonTypeName("CosmosDbMongoDbApiSource")
 @Fluent
 public final class CosmosDbMongoDbApiSource extends CopySource {
     /*
-     * Specifies selection filter using query operators. To return all documents in a collection, omit this parameter
-     * or pass an empty document ({}). Type: string (or Expression with resultType string).
+     * Copy source type.
+     */
+    @JsonTypeId
+    @JsonProperty(value = "type", required = true)
+    private String type = "CosmosDbMongoDbApiSource";
+
+    /*
+     * Specifies selection filter using query operators. To return all documents in a collection, omit this parameter or pass an empty document ({}). Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "filter")
     private Object filter;
@@ -28,36 +41,44 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
     private MongoDbCursorMethodsProperties cursorMethods;
 
     /*
-     * Specifies the number of documents to return in each batch of the response from MongoDB instance. In most cases,
-     * modifying the batch size will not affect the user or the application. This property's main purpose is to avoid
-     * hit the limitation of response size. Type: integer (or Expression with resultType integer).
+     * Specifies the number of documents to return in each batch of the response from MongoDB instance. In most cases, modifying the batch size will not affect the user or the application. This property's main purpose is to avoid hit the limitation of response size. Type: integer (or Expression with resultType integer).
      */
     @JsonProperty(value = "batchSize")
     private Object batchSize;
 
     /*
-     * Query timeout. Type: string (or Expression with resultType string), pattern:
-     * ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])).
+     * Query timeout. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])).
      */
     @JsonProperty(value = "queryTimeout")
     private Object queryTimeout;
 
     /*
-     * Specifies the additional columns to be added to source data. Type: array of objects(AdditionalColumns) (or
-     * Expression with resultType array of objects).
+     * Specifies the additional columns to be added to source data. Type: array of objects(AdditionalColumns) (or Expression with resultType array of objects).
      */
     @JsonProperty(value = "additionalColumns")
     private Object additionalColumns;
 
-    /** Creates an instance of CosmosDbMongoDbApiSource class. */
+    /**
+     * Creates an instance of CosmosDbMongoDbApiSource class.
+     */
     public CosmosDbMongoDbApiSource() {
+    }
+
+    /**
+     * Get the type property: Copy source type.
+     * 
+     * @return the type value.
+     */
+    @Override
+    public String type() {
+        return this.type;
     }
 
     /**
      * Get the filter property: Specifies selection filter using query operators. To return all documents in a
      * collection, omit this parameter or pass an empty document ({}). Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @return the filter value.
      */
     public Object filter() {
@@ -68,7 +89,7 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
      * Set the filter property: Specifies selection filter using query operators. To return all documents in a
      * collection, omit this parameter or pass an empty document ({}). Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @param filter the filter value to set.
      * @return the CosmosDbMongoDbApiSource object itself.
      */
@@ -79,7 +100,7 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
 
     /**
      * Get the cursorMethods property: Cursor methods for Mongodb query.
-     *
+     * 
      * @return the cursorMethods value.
      */
     public MongoDbCursorMethodsProperties cursorMethods() {
@@ -88,7 +109,7 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
 
     /**
      * Set the cursorMethods property: Cursor methods for Mongodb query.
-     *
+     * 
      * @param cursorMethods the cursorMethods value to set.
      * @return the CosmosDbMongoDbApiSource object itself.
      */
@@ -102,7 +123,7 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
      * MongoDB instance. In most cases, modifying the batch size will not affect the user or the application. This
      * property's main purpose is to avoid hit the limitation of response size. Type: integer (or Expression with
      * resultType integer).
-     *
+     * 
      * @return the batchSize value.
      */
     public Object batchSize() {
@@ -114,7 +135,7 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
      * MongoDB instance. In most cases, modifying the batch size will not affect the user or the application. This
      * property's main purpose is to avoid hit the limitation of response size. Type: integer (or Expression with
      * resultType integer).
-     *
+     * 
      * @param batchSize the batchSize value to set.
      * @return the CosmosDbMongoDbApiSource object itself.
      */
@@ -126,7 +147,7 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
     /**
      * Get the queryTimeout property: Query timeout. Type: string (or Expression with resultType string), pattern:
      * ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])).
-     *
+     * 
      * @return the queryTimeout value.
      */
     public Object queryTimeout() {
@@ -136,7 +157,7 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
     /**
      * Set the queryTimeout property: Query timeout. Type: string (or Expression with resultType string), pattern:
      * ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])).
-     *
+     * 
      * @param queryTimeout the queryTimeout value to set.
      * @return the CosmosDbMongoDbApiSource object itself.
      */
@@ -148,7 +169,7 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
     /**
      * Get the additionalColumns property: Specifies the additional columns to be added to source data. Type: array of
      * objects(AdditionalColumns) (or Expression with resultType array of objects).
-     *
+     * 
      * @return the additionalColumns value.
      */
     public Object additionalColumns() {
@@ -158,7 +179,7 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
     /**
      * Set the additionalColumns property: Specifies the additional columns to be added to source data. Type: array of
      * objects(AdditionalColumns) (or Expression with resultType array of objects).
-     *
+     * 
      * @param additionalColumns the additionalColumns value to set.
      * @return the CosmosDbMongoDbApiSource object itself.
      */
@@ -167,28 +188,36 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CosmosDbMongoDbApiSource withSourceRetryCount(Object sourceRetryCount) {
         super.withSourceRetryCount(sourceRetryCount);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CosmosDbMongoDbApiSource withSourceRetryWait(Object sourceRetryWait) {
         super.withSourceRetryWait(sourceRetryWait);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CosmosDbMongoDbApiSource withMaxConcurrentConnections(Object maxConcurrentConnections) {
         super.withMaxConcurrentConnections(maxConcurrentConnections);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public CosmosDbMongoDbApiSource withDisableMetricsCollection(Object disableMetricsCollection) {
         super.withDisableMetricsCollection(disableMetricsCollection);
@@ -197,7 +226,7 @@ public final class CosmosDbMongoDbApiSource extends CopySource {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     @Override

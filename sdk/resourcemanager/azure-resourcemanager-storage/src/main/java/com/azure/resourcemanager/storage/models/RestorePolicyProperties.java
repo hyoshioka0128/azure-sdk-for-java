@@ -6,9 +6,12 @@ package com.azure.resourcemanager.storage.models;
 
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.OffsetDateTime;
 
-/** The blob service properties for blob restore policy. */
+/**
+ * The blob service properties for blob restore policy.
+ */
 @Fluent
 public final class RestorePolicyProperties {
     /*
@@ -34,6 +37,12 @@ public final class RestorePolicyProperties {
      */
     @JsonProperty(value = "minRestoreTime", access = JsonProperty.Access.WRITE_ONLY)
     private OffsetDateTime minRestoreTime;
+
+    /**
+     * Creates an instance of RestorePolicyProperties class.
+     */
+    public RestorePolicyProperties() {
+    }
 
     /**
      * Get the enabled property: Blob restore is enabled if set to true.

@@ -8,38 +8,61 @@ import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Compression read settings. */
+/**
+ * Compression read settings.
+ */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
     property = "type",
-    defaultImpl = CompressionReadSettings.class)
+    defaultImpl = CompressionReadSettings.class,
+    visible = true)
 @JsonTypeName("CompressionReadSettings")
 @JsonSubTypes({
     @JsonSubTypes.Type(name = "ZipDeflateReadSettings", value = ZipDeflateReadSettings.class),
     @JsonSubTypes.Type(name = "TarReadSettings", value = TarReadSettings.class),
-    @JsonSubTypes.Type(name = "TarGZipReadSettings", value = TarGZipReadSettings.class)
-})
+    @JsonSubTypes.Type(name = "TarGZipReadSettings", value = TarGZipReadSettings.class) })
 @Fluent
 public class CompressionReadSettings {
     /*
+     * The Compression setting type.
+     */
+    @JsonTypeId
+    @JsonProperty(value = "type", required = true)
+    private String type;
+
+    /*
      * Compression read settings.
      */
-    @JsonIgnore private Map<String, Object> additionalProperties;
+    @JsonIgnore
+    private Map<String, Object> additionalProperties;
 
-    /** Creates an instance of CompressionReadSettings class. */
+    /**
+     * Creates an instance of CompressionReadSettings class.
+     */
     public CompressionReadSettings() {
+        this.type = "CompressionReadSettings";
+    }
+
+    /**
+     * Get the type property: The Compression setting type.
+     * 
+     * @return the type value.
+     */
+    public String type() {
+        return this.type;
     }
 
     /**
      * Get the additionalProperties property: Compression read settings.
-     *
+     * 
      * @return the additionalProperties value.
      */
     @JsonAnyGetter
@@ -49,7 +72,7 @@ public class CompressionReadSettings {
 
     /**
      * Set the additionalProperties property: Compression read settings.
-     *
+     * 
      * @param additionalProperties the additionalProperties value to set.
      * @return the CompressionReadSettings object itself.
      */
@@ -68,7 +91,7 @@ public class CompressionReadSettings {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {

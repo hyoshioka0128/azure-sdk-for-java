@@ -8,57 +8,87 @@ import com.azure.core.annotation.Fluent;
 import com.azure.core.util.logging.ClientLogger;
 import com.azure.resourcemanager.datafactory.fluent.models.SqlServerLinkedServiceTypeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.util.List;
 import java.util.Map;
 
-/** SQL Server linked service. */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+/**
+ * SQL Server linked service.
+ */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = SqlServerLinkedService.class, visible = true)
 @JsonTypeName("SqlServer")
 @Fluent
 public final class SqlServerLinkedService extends LinkedService {
+    /*
+     * Type of linked service.
+     */
+    @JsonTypeId
+    @JsonProperty(value = "type", required = true)
+    private String type = "SqlServer";
+
     /*
      * SQL Server linked service properties.
      */
     @JsonProperty(value = "typeProperties", required = true)
     private SqlServerLinkedServiceTypeProperties innerTypeProperties = new SqlServerLinkedServiceTypeProperties();
 
-    /** Creates an instance of SqlServerLinkedService class. */
+    /**
+     * Creates an instance of SqlServerLinkedService class.
+     */
     public SqlServerLinkedService() {
     }
 
     /**
+     * Get the type property: Type of linked service.
+     * 
+     * @return the type value.
+     */
+    @Override
+    public String type() {
+        return this.type;
+    }
+
+    /**
      * Get the innerTypeProperties property: SQL Server linked service properties.
-     *
+     * 
      * @return the innerTypeProperties value.
      */
     private SqlServerLinkedServiceTypeProperties innerTypeProperties() {
         return this.innerTypeProperties;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SqlServerLinkedService withConnectVia(IntegrationRuntimeReference connectVia) {
         super.withConnectVia(connectVia);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SqlServerLinkedService withDescription(String description) {
         super.withDescription(description);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SqlServerLinkedService withParameters(Map<String, ParameterSpecification> parameters) {
         super.withParameters(parameters);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SqlServerLinkedService withAnnotations(List<Object> annotations) {
         super.withAnnotations(annotations);
@@ -68,7 +98,7 @@ public final class SqlServerLinkedService extends LinkedService {
     /**
      * Get the connectionString property: The connection string. Type: string, SecureString or
      * AzureKeyVaultSecretReference.
-     *
+     * 
      * @return the connectionString value.
      */
     public Object connectionString() {
@@ -78,7 +108,7 @@ public final class SqlServerLinkedService extends LinkedService {
     /**
      * Set the connectionString property: The connection string. Type: string, SecureString or
      * AzureKeyVaultSecretReference.
-     *
+     * 
      * @param connectionString the connectionString value to set.
      * @return the SqlServerLinkedService object itself.
      */
@@ -93,7 +123,7 @@ public final class SqlServerLinkedService extends LinkedService {
     /**
      * Get the username property: The on-premises Windows authentication user name. Type: string (or Expression with
      * resultType string).
-     *
+     * 
      * @return the username value.
      */
     public Object username() {
@@ -103,7 +133,7 @@ public final class SqlServerLinkedService extends LinkedService {
     /**
      * Set the username property: The on-premises Windows authentication user name. Type: string (or Expression with
      * resultType string).
-     *
+     * 
      * @param username the username value to set.
      * @return the SqlServerLinkedService object itself.
      */
@@ -117,7 +147,7 @@ public final class SqlServerLinkedService extends LinkedService {
 
     /**
      * Get the password property: The on-premises Windows authentication password.
-     *
+     * 
      * @return the password value.
      */
     public SecretBase password() {
@@ -126,7 +156,7 @@ public final class SqlServerLinkedService extends LinkedService {
 
     /**
      * Set the password property: The on-premises Windows authentication password.
-     *
+     * 
      * @param password the password value to set.
      * @return the SqlServerLinkedService object itself.
      */
@@ -140,22 +170,22 @@ public final class SqlServerLinkedService extends LinkedService {
 
     /**
      * Get the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @return the encryptedCredential value.
      */
-    public Object encryptedCredential() {
+    public String encryptedCredential() {
         return this.innerTypeProperties() == null ? null : this.innerTypeProperties().encryptedCredential();
     }
 
     /**
      * Set the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @param encryptedCredential the encryptedCredential value to set.
      * @return the SqlServerLinkedService object itself.
      */
-    public SqlServerLinkedService withEncryptedCredential(Object encryptedCredential) {
+    public SqlServerLinkedService withEncryptedCredential(String encryptedCredential) {
         if (this.innerTypeProperties() == null) {
             this.innerTypeProperties = new SqlServerLinkedServiceTypeProperties();
         }
@@ -165,7 +195,7 @@ public final class SqlServerLinkedService extends LinkedService {
 
     /**
      * Get the alwaysEncryptedSettings property: Sql always encrypted properties.
-     *
+     * 
      * @return the alwaysEncryptedSettings value.
      */
     public SqlAlwaysEncryptedProperties alwaysEncryptedSettings() {
@@ -174,7 +204,7 @@ public final class SqlServerLinkedService extends LinkedService {
 
     /**
      * Set the alwaysEncryptedSettings property: Sql always encrypted properties.
-     *
+     * 
      * @param alwaysEncryptedSettings the alwaysEncryptedSettings value to set.
      * @return the SqlServerLinkedService object itself.
      */
@@ -188,17 +218,16 @@ public final class SqlServerLinkedService extends LinkedService {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     @Override
     public void validate() {
         super.validate();
         if (innerTypeProperties() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property innerTypeProperties in model SqlServerLinkedService"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property innerTypeProperties in model SqlServerLinkedService"));
         } else {
             innerTypeProperties().validate();
         }

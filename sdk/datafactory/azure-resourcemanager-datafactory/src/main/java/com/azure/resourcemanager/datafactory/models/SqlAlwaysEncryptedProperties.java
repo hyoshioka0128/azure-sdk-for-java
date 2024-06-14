@@ -8,18 +8,19 @@ import com.azure.core.annotation.Fluent;
 import com.azure.core.util.logging.ClientLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Sql always encrypted properties. */
+/**
+ * Sql always encrypted properties.
+ */
 @Fluent
 public final class SqlAlwaysEncryptedProperties {
     /*
-     * Sql always encrypted AKV authentication type. Type: string (or Expression with resultType string).
+     * Sql always encrypted AKV authentication type. Type: string.
      */
     @JsonProperty(value = "alwaysEncryptedAkvAuthType", required = true)
     private SqlAlwaysEncryptedAkvAuthType alwaysEncryptedAkvAuthType;
 
     /*
-     * The client ID of the application in Azure Active Directory used for Azure Key Vault authentication. Type: string
-     * (or Expression with resultType string).
+     * The client ID of the application in Azure Active Directory used for Azure Key Vault authentication. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "servicePrincipalId")
     private Object servicePrincipalId;
@@ -36,14 +37,15 @@ public final class SqlAlwaysEncryptedProperties {
     @JsonProperty(value = "credential")
     private CredentialReference credential;
 
-    /** Creates an instance of SqlAlwaysEncryptedProperties class. */
+    /**
+     * Creates an instance of SqlAlwaysEncryptedProperties class.
+     */
     public SqlAlwaysEncryptedProperties() {
     }
 
     /**
-     * Get the alwaysEncryptedAkvAuthType property: Sql always encrypted AKV authentication type. Type: string (or
-     * Expression with resultType string).
-     *
+     * Get the alwaysEncryptedAkvAuthType property: Sql always encrypted AKV authentication type. Type: string.
+     * 
      * @return the alwaysEncryptedAkvAuthType value.
      */
     public SqlAlwaysEncryptedAkvAuthType alwaysEncryptedAkvAuthType() {
@@ -51,14 +53,13 @@ public final class SqlAlwaysEncryptedProperties {
     }
 
     /**
-     * Set the alwaysEncryptedAkvAuthType property: Sql always encrypted AKV authentication type. Type: string (or
-     * Expression with resultType string).
-     *
+     * Set the alwaysEncryptedAkvAuthType property: Sql always encrypted AKV authentication type. Type: string.
+     * 
      * @param alwaysEncryptedAkvAuthType the alwaysEncryptedAkvAuthType value to set.
      * @return the SqlAlwaysEncryptedProperties object itself.
      */
-    public SqlAlwaysEncryptedProperties withAlwaysEncryptedAkvAuthType(
-        SqlAlwaysEncryptedAkvAuthType alwaysEncryptedAkvAuthType) {
+    public SqlAlwaysEncryptedProperties
+        withAlwaysEncryptedAkvAuthType(SqlAlwaysEncryptedAkvAuthType alwaysEncryptedAkvAuthType) {
         this.alwaysEncryptedAkvAuthType = alwaysEncryptedAkvAuthType;
         return this;
     }
@@ -66,7 +67,7 @@ public final class SqlAlwaysEncryptedProperties {
     /**
      * Get the servicePrincipalId property: The client ID of the application in Azure Active Directory used for Azure
      * Key Vault authentication. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the servicePrincipalId value.
      */
     public Object servicePrincipalId() {
@@ -76,7 +77,7 @@ public final class SqlAlwaysEncryptedProperties {
     /**
      * Set the servicePrincipalId property: The client ID of the application in Azure Active Directory used for Azure
      * Key Vault authentication. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param servicePrincipalId the servicePrincipalId value to set.
      * @return the SqlAlwaysEncryptedProperties object itself.
      */
@@ -88,7 +89,7 @@ public final class SqlAlwaysEncryptedProperties {
     /**
      * Get the servicePrincipalKey property: The key of the service principal used to authenticate against Azure Key
      * Vault.
-     *
+     * 
      * @return the servicePrincipalKey value.
      */
     public SecretBase servicePrincipalKey() {
@@ -98,7 +99,7 @@ public final class SqlAlwaysEncryptedProperties {
     /**
      * Set the servicePrincipalKey property: The key of the service principal used to authenticate against Azure Key
      * Vault.
-     *
+     * 
      * @param servicePrincipalKey the servicePrincipalKey value to set.
      * @return the SqlAlwaysEncryptedProperties object itself.
      */
@@ -109,7 +110,7 @@ public final class SqlAlwaysEncryptedProperties {
 
     /**
      * Get the credential property: The credential reference containing authentication information.
-     *
+     * 
      * @return the credential value.
      */
     public CredentialReference credential() {
@@ -118,7 +119,7 @@ public final class SqlAlwaysEncryptedProperties {
 
     /**
      * Set the credential property: The credential reference containing authentication information.
-     *
+     * 
      * @param credential the credential value to set.
      * @return the SqlAlwaysEncryptedProperties object itself.
      */
@@ -129,15 +130,14 @@ public final class SqlAlwaysEncryptedProperties {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (alwaysEncryptedAkvAuthType() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property alwaysEncryptedAkvAuthType in model SqlAlwaysEncryptedProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property alwaysEncryptedAkvAuthType in model SqlAlwaysEncryptedProperties"));
         }
         if (servicePrincipalKey() != null) {
             servicePrincipalKey().validate();

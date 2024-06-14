@@ -1,21 +1,145 @@
 # Release History
 
-## 5.16.0-beta.2 (Unreleased)
+## 5.19.0-beta.2 (Unreleased)
 
 ### Features Added
 
-- Added support for tracing options and configuration. ([#33600](https://github.com/Azure/azure-sdk-for-java/issues/33600))
-- Aligned with OpenTelemetry messaging semantic conventions (when latest azure-core-tracing-opentelemetry package is used). ([#33600](https://github.com/Azure/azure-sdk-for-java/issues/33600))
+- Add support for local emulator.
 
 ### Breaking Changes
+
+### Bugs Fixed
+
+- Use endpoint address's port when specified in connection string. (#40415)[https://github.com/Azure/azure-sdk-for-java/pull/40415]
+- Fix parsing of `customEndpointAddress` to match one used in connection string. (#40415)[https://github.com/Azure/azure-sdk-for-java/pull/40415]
+
+### Other Changes
+
+## 5.19.0-beta.1 (2024-05-21)
+
+### Features Added
+
+### Breaking Changes
+
+- `EventData.getOffset()`, `CheckpointStore.getOffset()`, `EventData.getOffset()`, and `LastEnqueuedEventProperties.getOffset()` are changed from `Long` to `String`.
+
+### Bugs Fixed
+
+- Fixed issue where creating EventProcessorClient instances using the same EventProcessorClientBuilder instance could result in incorrect properties. ([#29875](https://github.com/Azure/azure-sdk-for-java/issues/29875))
+
+## 5.18.3 (2024-04-23)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core` from `1.47.0` to version `1.48.0`.
+- Upgraded `azure-core-amqp` from `2.9.2` to version `2.9.3`.
+
+
+## 5.18.2 (2024-03-20)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core` from `1.46.0` to version `1.47.0`.
+- Upgraded `azure-core-amqp` from `2.9.1` to version `2.9.2`.
+
+
+## 5.18.1 (2024-02-16)
+
+### Bugs Fixed
+
+- Fixed over-prefetching in EventProcessorClient caused by implicit prefetching in partition pump reactor pipeline ([#38572](https://github.com/Azure/azure-sdk-for-java/issues/38572))
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core` from `1.45.1` to version `1.46.0`.
+- Upgraded `azure-core-amqp` from `2.9.0` to version `2.9.1`.
+
+## 5.18.0 (2024-01-19)
+
+### Bugs Fixed
+
+- Removed timeout from blocking wait in `EventHubProducerClient` in `createBatch`, `getEventHubProperties`, and `getPartitionProperties`. ([#38229](https://github.com/Azure/azure-sdk-for-java/pull/38229))
+- Stopped populating status attribute on metrics when no error has happened. ([#37884](https://github.com/Azure/azure-sdk-for-java/issues/37884))
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core-amqp` from `2.8.14` to version `2.9.0`.
+
+## 5.17.1 (2023-12-07)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core` from `1.45.0` to version `1.45.1`.
+- Upgraded `azure-core-amqp` from `2.8.13` to version `2.8.14`.
+
+## 5.17.0 (2023-11-20)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core-amqp` from `2.8.11` to version `2.8.13`.
+- Upgraded `azure-core` from `1.44.1` to version `1.45.0`.
+
+## 5.16.1 (2023-10-25)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core` from `1.43.0` to version `1.44.1`.
+- Upgraded `azure-core-amqp` from `2.8.9` to version `2.8.11`.
+
+## 5.16.0 (2023-09-22)
+
+### Features Added
+
+- Added support for a Function<String, EventPosition> that maps a partition id to EventPosition in EventProcessorClientBuilder. ([#36485](https://github.com/Azure/azure-sdk-for-java/pull/36485))
+- Added support for tracing options and configuration. ([#33600](https://github.com/Azure/azure-sdk-for-java/issues/33600))
+- Aligned with OpenTelemetry messaging semantic conventions (when latest azure-core-tracing-opentelemetry package is used). ([#33600](https://github.com/Azure/azure-sdk-for-java/issues/33600))
 
 ### Bugs Fixed
 
 - Fixed exception when attempting to populate trace context on received `EventData`. ([#33594](https://github.com/Azure/azure-sdk-for-java/issues/33594))
 - Fixed `NullPointerException` when ending span when `AmqpException` is thrown, but its `AmqpErrorCondition` is `null`.
   ([#35299](https://github.com/Azure/azure-sdk-for-java/issues/35299))
+- Handles errors thrown from user-called code when invoking `PartitionProcessor`'s `processError` or `close` methods. [#36891](https://github.com/Azure/azure-sdk-for-java/pull/36891)
 
 ### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core` from `1.42.0` to version `1.43.0`.
+- Upgraded `azure-core-amqp` from `2.8.8` to version `2.8.9`.
+
+## 5.15.8 (2023-08-18)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core` from `1.41.0` to version `1.42.0`.
+- Upgraded `azure-core-amqp` from `2.8.7` to version `2.8.8`.
+
+## 5.15.7 (2023-07-25)
+
+### Other Changes
+
+#### Dependency Updates
+
+- Upgraded `azure-core-amqp` from `2.8.6` to version `2.8.7`.
+- Upgraded `azure-core` from `1.40.0` to version `1.41.0`.
+
 
 ## 5.15.6 (2023-06-20)
 

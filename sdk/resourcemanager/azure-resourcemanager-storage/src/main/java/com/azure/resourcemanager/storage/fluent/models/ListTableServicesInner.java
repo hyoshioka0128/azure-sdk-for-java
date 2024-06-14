@@ -6,9 +6,12 @@ package com.azure.resourcemanager.storage.fluent.models;
 
 import com.azure.core.annotation.Immutable;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
-/** The ListTableServices model. */
+/**
+ * The ListTableServices model.
+ */
 @Immutable
 public final class ListTableServicesInner {
     /*
@@ -16,6 +19,12 @@ public final class ListTableServicesInner {
      */
     @JsonProperty(value = "value", access = JsonProperty.Access.WRITE_ONLY)
     private List<TableServicePropertiesInner> value;
+
+    /**
+     * Creates an instance of ListTableServicesInner class.
+     */
+    public ListTableServicesInner() {
+    }
 
     /**
      * Get the value property: List of table services returned.

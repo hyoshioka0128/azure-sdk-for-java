@@ -7,9 +7,12 @@ package com.azure.resourcemanager.storage.models;
 import com.azure.core.annotation.Fluent;
 import com.azure.core.util.logging.ClientLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.OffsetDateTime;
 
-/** Table Access Policy Properties Object. */
+/**
+ * Table Access Policy Properties Object.
+ */
 @Fluent
 public final class TableAccessPolicy {
     /*
@@ -29,6 +32,12 @@ public final class TableAccessPolicy {
      */
     @JsonProperty(value = "permission", required = true)
     private String permission;
+
+    /**
+     * Creates an instance of TableAccessPolicy class.
+     */
+    public TableAccessPolicy() {
+    }
 
     /**
      * Get the startTime property: Start time of the access policy.
@@ -99,9 +108,8 @@ public final class TableAccessPolicy {
      */
     public void validate() {
         if (permission() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException("Missing required property permission in model TableAccessPolicy"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException("Missing required property permission in model TableAccessPolicy"));
         }
     }
 

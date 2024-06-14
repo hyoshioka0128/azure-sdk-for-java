@@ -7,9 +7,12 @@ package com.azure.resourcemanager.storage.models;
 import com.azure.core.annotation.Fluent;
 import com.azure.resourcemanager.storage.fluent.models.ImmutabilityPolicyProperty;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
-/** The properties of an ImmutabilityPolicy of a blob container. */
+/**
+ * The properties of an ImmutabilityPolicy of a blob container.
+ */
 @Fluent
 public final class ImmutabilityPolicyProperties {
     /*
@@ -29,6 +32,12 @@ public final class ImmutabilityPolicyProperties {
      */
     @JsonProperty(value = "updateHistory", access = JsonProperty.Access.WRITE_ONLY)
     private List<UpdateHistoryProperty> updateHistory;
+
+    /**
+     * Creates an instance of ImmutabilityPolicyProperties class.
+     */
+    public ImmutabilityPolicyProperties() {
+    }
 
     /**
      * Get the innerProperties property: The properties of an ImmutabilityPolicy of a blob container.
@@ -74,8 +83,8 @@ public final class ImmutabilityPolicyProperties {
      * @param immutabilityPeriodSinceCreationInDays the immutabilityPeriodSinceCreationInDays value to set.
      * @return the ImmutabilityPolicyProperties object itself.
      */
-    public ImmutabilityPolicyProperties withImmutabilityPeriodSinceCreationInDays(
-        Integer immutabilityPeriodSinceCreationInDays) {
+    public ImmutabilityPolicyProperties
+        withImmutabilityPeriodSinceCreationInDays(Integer immutabilityPeriodSinceCreationInDays) {
         if (this.innerProperties() == null) {
             this.innerProperties = new ImmutabilityPolicyProperty();
         }

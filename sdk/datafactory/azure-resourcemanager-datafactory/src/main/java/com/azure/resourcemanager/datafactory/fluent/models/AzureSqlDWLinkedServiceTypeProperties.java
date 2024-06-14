@@ -11,12 +11,13 @@ import com.azure.resourcemanager.datafactory.models.CredentialReference;
 import com.azure.resourcemanager.datafactory.models.SecretBase;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Azure SQL Data Warehouse linked service properties. */
+/**
+ * Azure SQL Data Warehouse linked service properties.
+ */
 @Fluent
 public final class AzureSqlDWLinkedServiceTypeProperties {
     /*
-     * The connection string. Type: string, SecureString or AzureKeyVaultSecretReference. Type: string, SecureString or
-     * AzureKeyVaultSecretReference.
+     * The connection string. Type: string, SecureString or AzureKeyVaultSecretReference. Type: string, SecureString or AzureKeyVaultSecretReference.
      */
     @JsonProperty(value = "connectionString", required = true)
     private Object connectionString;
@@ -28,8 +29,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
     private AzureKeyVaultSecretReference password;
 
     /*
-     * The ID of the service principal used to authenticate against Azure SQL Data Warehouse. Type: string (or
-     * Expression with resultType string).
+     * The ID of the service principal used to authenticate against Azure SQL Data Warehouse. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "servicePrincipalId")
     private Object servicePrincipalId;
@@ -41,26 +41,22 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
     private SecretBase servicePrincipalKey;
 
     /*
-     * The name or ID of the tenant to which the service principal belongs. Type: string (or Expression with resultType
-     * string).
+     * The name or ID of the tenant to which the service principal belongs. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "tenant")
     private Object tenant;
 
     /*
-     * Indicates the azure cloud type of the service principle auth. Allowed values are AzurePublic, AzureChina,
-     * AzureUsGovernment, AzureGermany. Default value is the data factory regions’ cloud type. Type: string (or
-     * Expression with resultType string).
+     * Indicates the azure cloud type of the service principle auth. Allowed values are AzurePublic, AzureChina, AzureUsGovernment, AzureGermany. Default value is the data factory regions’ cloud type. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "azureCloudType")
     private Object azureCloudType;
 
     /*
-     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime
-     * credential manager. Type: string (or Expression with resultType string).
+     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string.
      */
     @JsonProperty(value = "encryptedCredential")
-    private Object encryptedCredential;
+    private String encryptedCredential;
 
     /*
      * The credential reference containing authentication information.
@@ -68,14 +64,16 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
     @JsonProperty(value = "credential")
     private CredentialReference credential;
 
-    /** Creates an instance of AzureSqlDWLinkedServiceTypeProperties class. */
+    /**
+     * Creates an instance of AzureSqlDWLinkedServiceTypeProperties class.
+     */
     public AzureSqlDWLinkedServiceTypeProperties() {
     }
 
     /**
      * Get the connectionString property: The connection string. Type: string, SecureString or
      * AzureKeyVaultSecretReference. Type: string, SecureString or AzureKeyVaultSecretReference.
-     *
+     * 
      * @return the connectionString value.
      */
     public Object connectionString() {
@@ -85,7 +83,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
     /**
      * Set the connectionString property: The connection string. Type: string, SecureString or
      * AzureKeyVaultSecretReference. Type: string, SecureString or AzureKeyVaultSecretReference.
-     *
+     * 
      * @param connectionString the connectionString value to set.
      * @return the AzureSqlDWLinkedServiceTypeProperties object itself.
      */
@@ -96,7 +94,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
 
     /**
      * Get the password property: The Azure key vault secret reference of password in connection string.
-     *
+     * 
      * @return the password value.
      */
     public AzureKeyVaultSecretReference password() {
@@ -105,7 +103,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
 
     /**
      * Set the password property: The Azure key vault secret reference of password in connection string.
-     *
+     * 
      * @param password the password value to set.
      * @return the AzureSqlDWLinkedServiceTypeProperties object itself.
      */
@@ -117,7 +115,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
     /**
      * Get the servicePrincipalId property: The ID of the service principal used to authenticate against Azure SQL Data
      * Warehouse. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the servicePrincipalId value.
      */
     public Object servicePrincipalId() {
@@ -127,7 +125,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
     /**
      * Set the servicePrincipalId property: The ID of the service principal used to authenticate against Azure SQL Data
      * Warehouse. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param servicePrincipalId the servicePrincipalId value to set.
      * @return the AzureSqlDWLinkedServiceTypeProperties object itself.
      */
@@ -139,7 +137,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
     /**
      * Get the servicePrincipalKey property: The key of the service principal used to authenticate against Azure SQL
      * Data Warehouse.
-     *
+     * 
      * @return the servicePrincipalKey value.
      */
     public SecretBase servicePrincipalKey() {
@@ -149,7 +147,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
     /**
      * Set the servicePrincipalKey property: The key of the service principal used to authenticate against Azure SQL
      * Data Warehouse.
-     *
+     * 
      * @param servicePrincipalKey the servicePrincipalKey value to set.
      * @return the AzureSqlDWLinkedServiceTypeProperties object itself.
      */
@@ -161,7 +159,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
     /**
      * Get the tenant property: The name or ID of the tenant to which the service principal belongs. Type: string (or
      * Expression with resultType string).
-     *
+     * 
      * @return the tenant value.
      */
     public Object tenant() {
@@ -171,7 +169,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
     /**
      * Set the tenant property: The name or ID of the tenant to which the service principal belongs. Type: string (or
      * Expression with resultType string).
-     *
+     * 
      * @param tenant the tenant value to set.
      * @return the AzureSqlDWLinkedServiceTypeProperties object itself.
      */
@@ -184,7 +182,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
      * Get the azureCloudType property: Indicates the azure cloud type of the service principle auth. Allowed values are
      * AzurePublic, AzureChina, AzureUsGovernment, AzureGermany. Default value is the data factory regions’ cloud type.
      * Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the azureCloudType value.
      */
     public Object azureCloudType() {
@@ -195,7 +193,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
      * Set the azureCloudType property: Indicates the azure cloud type of the service principle auth. Allowed values are
      * AzurePublic, AzureChina, AzureUsGovernment, AzureGermany. Default value is the data factory regions’ cloud type.
      * Type: string (or Expression with resultType string).
-     *
+     * 
      * @param azureCloudType the azureCloudType value to set.
      * @return the AzureSqlDWLinkedServiceTypeProperties object itself.
      */
@@ -206,29 +204,29 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
 
     /**
      * Get the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @return the encryptedCredential value.
      */
-    public Object encryptedCredential() {
+    public String encryptedCredential() {
         return this.encryptedCredential;
     }
 
     /**
      * Set the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @param encryptedCredential the encryptedCredential value to set.
      * @return the AzureSqlDWLinkedServiceTypeProperties object itself.
      */
-    public AzureSqlDWLinkedServiceTypeProperties withEncryptedCredential(Object encryptedCredential) {
+    public AzureSqlDWLinkedServiceTypeProperties withEncryptedCredential(String encryptedCredential) {
         this.encryptedCredential = encryptedCredential;
         return this;
     }
 
     /**
      * Get the credential property: The credential reference containing authentication information.
-     *
+     * 
      * @return the credential value.
      */
     public CredentialReference credential() {
@@ -237,7 +235,7 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
 
     /**
      * Set the credential property: The credential reference containing authentication information.
-     *
+     * 
      * @param credential the credential value to set.
      * @return the AzureSqlDWLinkedServiceTypeProperties object itself.
      */
@@ -248,15 +246,14 @@ public final class AzureSqlDWLinkedServiceTypeProperties {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (connectionString() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property connectionString in model AzureSqlDWLinkedServiceTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property connectionString in model AzureSqlDWLinkedServiceTypeProperties"));
         }
         if (password() != null) {
             password().validate();

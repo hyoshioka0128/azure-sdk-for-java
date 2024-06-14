@@ -8,22 +8,31 @@ import com.azure.core.annotation.Fluent;
 import com.azure.core.util.logging.ClientLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-/** Factory's git repo information. */
+/**
+ * Factory's git repo information.
+ */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
     property = "type",
-    defaultImpl = FactoryRepoConfiguration.class)
+    defaultImpl = FactoryRepoConfiguration.class,
+    visible = true)
 @JsonTypeName("FactoryRepoConfiguration")
 @JsonSubTypes({
     @JsonSubTypes.Type(name = "FactoryVSTSConfiguration", value = FactoryVstsConfiguration.class),
-    @JsonSubTypes.Type(name = "FactoryGitHubConfiguration", value = FactoryGitHubConfiguration.class)
-})
+    @JsonSubTypes.Type(name = "FactoryGitHubConfiguration", value = FactoryGitHubConfiguration.class) })
 @Fluent
 public class FactoryRepoConfiguration {
+    /*
+     * Type of repo configuration.
+     */
+    @JsonTypeId
+    @JsonProperty(value = "type", required = true)
+    private String type;
+
     /*
      * Account name.
      */
@@ -60,13 +69,25 @@ public class FactoryRepoConfiguration {
     @JsonProperty(value = "disablePublish")
     private Boolean disablePublish;
 
-    /** Creates an instance of FactoryRepoConfiguration class. */
+    /**
+     * Creates an instance of FactoryRepoConfiguration class.
+     */
     public FactoryRepoConfiguration() {
+        this.type = "FactoryRepoConfiguration";
+    }
+
+    /**
+     * Get the type property: Type of repo configuration.
+     * 
+     * @return the type value.
+     */
+    public String type() {
+        return this.type;
     }
 
     /**
      * Get the accountName property: Account name.
-     *
+     * 
      * @return the accountName value.
      */
     public String accountName() {
@@ -75,7 +96,7 @@ public class FactoryRepoConfiguration {
 
     /**
      * Set the accountName property: Account name.
-     *
+     * 
      * @param accountName the accountName value to set.
      * @return the FactoryRepoConfiguration object itself.
      */
@@ -86,7 +107,7 @@ public class FactoryRepoConfiguration {
 
     /**
      * Get the repositoryName property: Repository name.
-     *
+     * 
      * @return the repositoryName value.
      */
     public String repositoryName() {
@@ -95,7 +116,7 @@ public class FactoryRepoConfiguration {
 
     /**
      * Set the repositoryName property: Repository name.
-     *
+     * 
      * @param repositoryName the repositoryName value to set.
      * @return the FactoryRepoConfiguration object itself.
      */
@@ -106,7 +127,7 @@ public class FactoryRepoConfiguration {
 
     /**
      * Get the collaborationBranch property: Collaboration branch.
-     *
+     * 
      * @return the collaborationBranch value.
      */
     public String collaborationBranch() {
@@ -115,7 +136,7 @@ public class FactoryRepoConfiguration {
 
     /**
      * Set the collaborationBranch property: Collaboration branch.
-     *
+     * 
      * @param collaborationBranch the collaborationBranch value to set.
      * @return the FactoryRepoConfiguration object itself.
      */
@@ -126,7 +147,7 @@ public class FactoryRepoConfiguration {
 
     /**
      * Get the rootFolder property: Root folder.
-     *
+     * 
      * @return the rootFolder value.
      */
     public String rootFolder() {
@@ -135,7 +156,7 @@ public class FactoryRepoConfiguration {
 
     /**
      * Set the rootFolder property: Root folder.
-     *
+     * 
      * @param rootFolder the rootFolder value to set.
      * @return the FactoryRepoConfiguration object itself.
      */
@@ -146,7 +167,7 @@ public class FactoryRepoConfiguration {
 
     /**
      * Get the lastCommitId property: Last commit id.
-     *
+     * 
      * @return the lastCommitId value.
      */
     public String lastCommitId() {
@@ -155,7 +176,7 @@ public class FactoryRepoConfiguration {
 
     /**
      * Set the lastCommitId property: Last commit id.
-     *
+     * 
      * @param lastCommitId the lastCommitId value to set.
      * @return the FactoryRepoConfiguration object itself.
      */
@@ -166,7 +187,7 @@ public class FactoryRepoConfiguration {
 
     /**
      * Get the disablePublish property: Disable manual publish operation in ADF studio to favor automated publish.
-     *
+     * 
      * @return the disablePublish value.
      */
     public Boolean disablePublish() {
@@ -175,7 +196,7 @@ public class FactoryRepoConfiguration {
 
     /**
      * Set the disablePublish property: Disable manual publish operation in ADF studio to favor automated publish.
-     *
+     * 
      * @param disablePublish the disablePublish value to set.
      * @return the FactoryRepoConfiguration object itself.
      */
@@ -186,33 +207,29 @@ public class FactoryRepoConfiguration {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (accountName() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property accountName in model FactoryRepoConfiguration"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property accountName in model FactoryRepoConfiguration"));
         }
         if (repositoryName() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property repositoryName in model FactoryRepoConfiguration"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property repositoryName in model FactoryRepoConfiguration"));
         }
         if (collaborationBranch() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property collaborationBranch in model FactoryRepoConfiguration"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property collaborationBranch in model FactoryRepoConfiguration"));
         }
         if (rootFolder() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property rootFolder in model FactoryRepoConfiguration"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property rootFolder in model FactoryRepoConfiguration"));
         }
     }
 

@@ -12,10 +12,8 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * <h1>Base Heartbeat Property Provider</h1>
- *
- * <p>This class is a concrete implementation of {@link HeartBeatPayloadProviderInterface} It
- * enables setting SDK Metadata to heartbeat payload.
+ * This class is a concrete implementation of {@link HeartBeatPayloadProviderInterface}. It enables
+ * setting SDK Metadata to heartbeat payload.
  */
 public class DefaultHeartBeatPropertyProvider implements HeartBeatPayloadProviderInterface {
 
@@ -25,7 +23,7 @@ public class DefaultHeartBeatPropertyProvider implements HeartBeatPayloadProvide
     /**
      * Collection holding default properties for this default provider.
      */
-    private final Set<String> defaultFields;
+    final Set<String> defaultFields;
 
     /**
      * Random GUID that would help in analysis when app has stopped and restarted. Each restart will

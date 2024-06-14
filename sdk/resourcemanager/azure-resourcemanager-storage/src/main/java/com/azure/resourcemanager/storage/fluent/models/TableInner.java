@@ -8,9 +8,12 @@ import com.azure.core.annotation.Fluent;
 import com.azure.core.management.ProxyResource;
 import com.azure.resourcemanager.storage.models.TableSignedIdentifier;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
-/** Properties of the table, including Id, resource name, resource type. */
+/**
+ * Properties of the table, including Id, resource name, resource type.
+ */
 @Fluent
 public final class TableInner extends ProxyResource {
     /*
@@ -18,6 +21,12 @@ public final class TableInner extends ProxyResource {
      */
     @JsonProperty(value = "properties")
     private TableProperties innerTableProperties;
+
+    /**
+     * Creates an instance of TableInner class.
+     */
+    public TableInner() {
+    }
 
     /**
      * Get the innerTableProperties property: Table resource properties.

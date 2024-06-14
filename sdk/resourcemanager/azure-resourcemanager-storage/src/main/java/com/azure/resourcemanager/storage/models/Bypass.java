@@ -6,6 +6,7 @@ package com.azure.resourcemanager.storage.models;
 
 import com.azure.core.util.ExpandableStringEnum;
 import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.util.Collection;
 
 /**
@@ -13,17 +14,34 @@ import java.util.Collection;
  * Logging|Metrics|AzureServices (For example, "Logging, Metrics"), or None to bypass none of those traffics.
  */
 public final class Bypass extends ExpandableStringEnum<Bypass> {
-    /** Static value None for Bypass. */
+    /**
+     * Static value None for Bypass.
+     */
     public static final Bypass NONE = fromString("None");
 
-    /** Static value Logging for Bypass. */
+    /**
+     * Static value Logging for Bypass.
+     */
     public static final Bypass LOGGING = fromString("Logging");
 
-    /** Static value Metrics for Bypass. */
+    /**
+     * Static value Metrics for Bypass.
+     */
     public static final Bypass METRICS = fromString("Metrics");
 
-    /** Static value AzureServices for Bypass. */
+    /**
+     * Static value AzureServices for Bypass.
+     */
     public static final Bypass AZURE_SERVICES = fromString("AzureServices");
+
+    /**
+     * Creates a new instance of Bypass value.
+     *
+     * @deprecated Use the {@link #fromString(String)} factory method.
+     */
+    @Deprecated
+    public Bypass() {
+    }
 
     /**
      * Creates or finds a Bypass from its string representation.

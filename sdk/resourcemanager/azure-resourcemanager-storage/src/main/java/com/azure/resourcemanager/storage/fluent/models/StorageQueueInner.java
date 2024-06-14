@@ -7,9 +7,12 @@ package com.azure.resourcemanager.storage.fluent.models;
 import com.azure.core.annotation.Fluent;
 import com.azure.core.management.ProxyResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Map;
 
-/** The StorageQueue model. */
+/**
+ * The StorageQueue model.
+ */
 @Fluent
 public final class StorageQueueInner extends ProxyResource {
     /*
@@ -17,6 +20,12 @@ public final class StorageQueueInner extends ProxyResource {
      */
     @JsonProperty(value = "properties")
     private QueueProperties innerQueueProperties;
+
+    /**
+     * Creates an instance of StorageQueueInner class.
+     */
+    public StorageQueueInner() {
+    }
 
     /**
      * Get the innerQueueProperties property: Queue resource properties.

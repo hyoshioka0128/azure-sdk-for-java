@@ -4,8 +4,11 @@ package com.azure.spring.data.cosmos;
 
 import com.azure.core.credential.AzureKeyCredential;
 import com.azure.cosmos.CosmosClientBuilder;
+import com.azure.cosmos.CosmosDiagnosticsHandler;
+import com.azure.cosmos.CosmosDiagnosticsThresholds;
 import com.azure.cosmos.DirectConnectionConfig;
 import com.azure.cosmos.GatewayConnectionConfig;
+import com.azure.cosmos.models.CosmosClientTelemetryConfig;
 import com.azure.spring.data.cosmos.config.AbstractCosmosConfiguration;
 import com.azure.spring.data.cosmos.config.CosmosConfig;
 import com.azure.spring.data.cosmos.core.ResponseDiagnostics;
@@ -17,6 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.Nullable;
+
+import java.time.Duration;
 
 // BEGIN: readme-sample-AppConfiguration
 @Configuration
@@ -40,6 +45,9 @@ public class AppConfiguration extends AbstractCosmosConfiguration {
     @Value("${azure.cosmos.queryMetricsEnabled}")
     private boolean queryMetricsEnabled;
 
+    @Value("${azure.cosmos.indexMetricsEnabled}")
+    private boolean indexMetricsEnabled;
+
     @Value("${azure.cosmos.maxDegreeOfParallelism}")
     private int maxDegreeOfParallelism;
 
@@ -48,6 +56,19 @@ public class AppConfiguration extends AbstractCosmosConfiguration {
 
     @Value("${azure.cosmos.responseContinuationTokenLimitInKb}")
     private int responseContinuationTokenLimitInKb;
+
+    @Value("${azure.cosmos.diagnosticsThresholds.pointOperationLatencyThresholdInMS}")
+    private int pointOperationLatencyThresholdInMS;
+
+    @Value("${azure.cosmos.diagnosticsThresholds.nonPointOperationLatencyThresholdInMS}")
+    private int nonPointOperationLatencyThresholdInMS;
+
+    @Value("${azure.cosmos.diagnosticsThresholds.requestChargeThresholdInRU}")
+    private int requestChargeThresholdInRU;
+
+    @Value("${azure.cosmos.diagnosticsThresholds.payloadSizeThresholdInBytes}")
+    private int payloadSizeThresholdInBytes;
+
 
     private AzureKeyCredential azureKeyCredential;
 
@@ -59,13 +80,24 @@ public class AppConfiguration extends AbstractCosmosConfiguration {
         return new CosmosClientBuilder()
             .endpoint(uri)
             .credential(azureKeyCredential)
-            .directMode(directConnectionConfig, gatewayConnectionConfig);
+            .directMode(directConnectionConfig, gatewayConnectionConfig)
+            .clientTelemetryConfig(
+                new CosmosClientTelemetryConfig()
+                    .diagnosticsThresholds(
+                        new CosmosDiagnosticsThresholds()
+                            .setNonPointOperationLatencyThreshold(Duration.ofMillis(nonPointOperationLatencyThresholdInMS))
+                            .setPointOperationLatencyThreshold(Duration.ofMillis(pointOperationLatencyThresholdInMS))
+                            .setPayloadSizeThreshold(payloadSizeThresholdInBytes)
+                            .setRequestChargeThreshold(requestChargeThresholdInRU)
+                    )
+                    .diagnosticsHandler(CosmosDiagnosticsHandler.DEFAULT_LOGGING_HANDLER));
     }
 
     @Override
     public CosmosConfig cosmosConfig() {
         return CosmosConfig.builder()
                            .enableQueryMetrics(queryMetricsEnabled)
+                           .enableIndexMetrics(indexMetricsEnabled)
                            .maxDegreeOfParallelism(maxDegreeOfParallelism)
                            .maxBufferedItemCount(maxBufferedItemCount)
                            .responseContinuationTokenLimitInKb(responseContinuationTokenLimitInKb)

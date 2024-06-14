@@ -31,11 +31,14 @@ import com.azure.resourcemanager.storage.models.SasPolicy;
 import com.azure.resourcemanager.storage.models.Sku;
 import com.azure.resourcemanager.storage.models.StorageAccountSkuConversionStatus;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
-/** The storage account. */
+/**
+ * The storage account.
+ */
 @Fluent
 public final class StorageAccountInner extends Resource {
     /*
@@ -67,6 +70,12 @@ public final class StorageAccountInner extends Resource {
      */
     @JsonProperty(value = "properties")
     private StorageAccountPropertiesInner innerProperties;
+
+    /**
+     * Creates an instance of StorageAccountInner class.
+     */
+    public StorageAccountInner() {
+    }
 
     /**
      * Get the sku property: Gets the SKU.
@@ -135,14 +144,18 @@ public final class StorageAccountInner extends Resource {
         return this.innerProperties;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StorageAccountInner withLocation(String location) {
         super.withLocation(location);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public StorageAccountInner withTags(Map<String, String> tags) {
         super.withTags(tags);
@@ -399,6 +412,29 @@ public final class StorageAccountInner extends Resource {
     }
 
     /**
+     * Get the enableExtendedGroups property: Enables extended group support with local users feature, if set to true.
+     *
+     * @return the enableExtendedGroups value.
+     */
+    public Boolean enableExtendedGroups() {
+        return this.innerProperties() == null ? null : this.innerProperties().enableExtendedGroups();
+    }
+
+    /**
+     * Set the enableExtendedGroups property: Enables extended group support with local users feature, if set to true.
+     *
+     * @param enableExtendedGroups the enableExtendedGroups value to set.
+     * @return the StorageAccountInner object itself.
+     */
+    public StorageAccountInner withEnableExtendedGroups(Boolean enableExtendedGroups) {
+        if (this.innerProperties() == null) {
+            this.innerProperties = new StorageAccountPropertiesInner();
+        }
+        this.innerProperties().withEnableExtendedGroups(enableExtendedGroups);
+        return this;
+    }
+
+    /**
      * Get the isHnsEnabled property: Account HierarchicalNamespace enabled if sets to true.
      *
      * @return the isHnsEnabled value.
@@ -511,7 +547,7 @@ public final class StorageAccountInner extends Resource {
 
     /**
      * Get the allowBlobPublicAccess property: Allow or disallow public access to all blobs or containers in the storage
-     * account. The default interpretation is true for this property.
+     * account. The default interpretation is false for this property.
      *
      * @return the allowBlobPublicAccess value.
      */
@@ -521,7 +557,7 @@ public final class StorageAccountInner extends Resource {
 
     /**
      * Set the allowBlobPublicAccess property: Allow or disallow public access to all blobs or containers in the storage
-     * account. The default interpretation is true for this property.
+     * account. The default interpretation is false for this property.
      *
      * @param allowBlobPublicAccess the allowBlobPublicAccess value to set.
      * @return the StorageAccountInner object itself.
@@ -610,8 +646,10 @@ public final class StorageAccountInner extends Resource {
     }
 
     /**
-     * Get the allowCrossTenantReplication property: Allow or disallow cross AAD tenant object replication. The default
-     * interpretation is true for this property.
+     * Get the allowCrossTenantReplication property: Allow or disallow cross AAD tenant object replication. Set this
+     * property to true for new or existing accounts only if object replication policies will involve storage accounts
+     * in different AAD tenants. The default interpretation is false for new accounts to follow best security practices
+     * by default.
      *
      * @return the allowCrossTenantReplication value.
      */
@@ -620,8 +658,10 @@ public final class StorageAccountInner extends Resource {
     }
 
     /**
-     * Set the allowCrossTenantReplication property: Allow or disallow cross AAD tenant object replication. The default
-     * interpretation is true for this property.
+     * Set the allowCrossTenantReplication property: Allow or disallow cross AAD tenant object replication. Set this
+     * property to true for new or existing accounts only if object replication policies will involve storage accounts
+     * in different AAD tenants. The default interpretation is false for new accounts to follow best security practices
+     * by default.
      *
      * @param allowCrossTenantReplication the allowCrossTenantReplication value to set.
      * @return the StorageAccountInner object itself.
@@ -660,8 +700,8 @@ public final class StorageAccountInner extends Resource {
     }
 
     /**
-     * Get the publicNetworkAccess property: Allow or disallow public network access to Storage Account. Value is
-     * optional but if passed in, must be 'Enabled' or 'Disabled'.
+     * Get the publicNetworkAccess property: Allow, disallow, or let Network Security Perimeter configuration to
+     * evaluate public network access to Storage Account.
      *
      * @return the publicNetworkAccess value.
      */
@@ -670,8 +710,8 @@ public final class StorageAccountInner extends Resource {
     }
 
     /**
-     * Set the publicNetworkAccess property: Allow or disallow public network access to Storage Account. Value is
-     * optional but if passed in, must be 'Enabled' or 'Disabled'.
+     * Set the publicNetworkAccess property: Allow, disallow, or let Network Security Perimeter configuration to
+     * evaluate public network access to Storage Account.
      *
      * @param publicNetworkAccess the publicNetworkAccess value to set.
      * @return the StorageAccountInner object itself.
@@ -703,8 +743,8 @@ public final class StorageAccountInner extends Resource {
      * @param immutableStorageWithVersioning the immutableStorageWithVersioning value to set.
      * @return the StorageAccountInner object itself.
      */
-    public StorageAccountInner withImmutableStorageWithVersioning(
-        ImmutableStorageAccount immutableStorageWithVersioning) {
+    public StorageAccountInner
+        withImmutableStorageWithVersioning(ImmutableStorageAccount immutableStorageWithVersioning) {
         if (this.innerProperties() == null) {
             this.innerProperties = new StorageAccountPropertiesInner();
         }
@@ -754,8 +794,8 @@ public final class StorageAccountInner extends Resource {
      * @param storageAccountSkuConversionStatus the storageAccountSkuConversionStatus value to set.
      * @return the StorageAccountInner object itself.
      */
-    public StorageAccountInner withStorageAccountSkuConversionStatus(
-        StorageAccountSkuConversionStatus storageAccountSkuConversionStatus) {
+    public StorageAccountInner
+        withStorageAccountSkuConversionStatus(StorageAccountSkuConversionStatus storageAccountSkuConversionStatus) {
         if (this.innerProperties() == null) {
             this.innerProperties = new StorageAccountPropertiesInner();
         }
@@ -788,6 +828,26 @@ public final class StorageAccountInner extends Resource {
         }
         this.innerProperties().withDnsEndpointType(dnsEndpointType);
         return this;
+    }
+
+    /**
+     * Get the isSkuConversionBlocked property: This property will be set to true or false on an event of ongoing
+     * migration. Default value is null.
+     *
+     * @return the isSkuConversionBlocked value.
+     */
+    public Boolean isSkuConversionBlocked() {
+        return this.innerProperties() == null ? null : this.innerProperties().isSkuConversionBlocked();
+    }
+
+    /**
+     * Get the accountMigrationInProgress property: If customer initiated account migration is in progress, the value
+     * will be true else it will be null.
+     *
+     * @return the accountMigrationInProgress value.
+     */
+    public Boolean accountMigrationInProgress() {
+        return this.innerProperties() == null ? null : this.innerProperties().accountMigrationInProgress();
     }
 
     /**

@@ -1,6 +1,6 @@
 # Release History
 
-## 2.8.0-beta.1 (Unreleased)
+## 2.9.0-beta.2 (Unreleased)
 
 ### Features Added
 
@@ -9,6 +9,29 @@
 ### Bugs Fixed
 
 ### Other Changes
+
+## 2.9.0-beta.1 (2024-05-15)
+
+### Features Added
+- Added support for providing a custom login URI to get access tokens from via the system property `azure.login.uri`.
+
+### Other Changes
+
+#### Dependency Updates
+- Upgraded `conscrypt-openjdk-uber` from `2.2.1` to version `2.5.2`.
+
+## 2.8.1 (2023-12-04)
+
+### Other Changes
+
+#### Dependency Updates
+
+Regular updates for dependency versions.
+
+## 2.8.0 (2023-09-28)
+
+### Features Added
+- Support key type of `RSA-HSM` and `EC-HSM` in JCA [#36648](https://github.com/Azure/azure-sdk-for-java/pull/36648).
 
 ## 2.7.1 (2023-03-01)
 

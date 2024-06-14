@@ -8,12 +8,13 @@ import com.azure.core.annotation.Fluent;
 import com.azure.resourcemanager.datafactory.models.SecretBase;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** QuickBooks server linked service properties. */
+/**
+ * QuickBooks server linked service properties.
+ */
 @Fluent
 public final class QuickBooksLinkedServiceTypeProperties {
     /*
-     * Properties used to connect to QuickBooks. It is mutually exclusive with any other properties in the linked
-     * service. Type: object.
+     * Properties used to connect to QuickBooks. It is mutually exclusive with any other properties in the linked service. Type: object.
      */
     @JsonProperty(value = "connectionProperties")
     private Object connectionProperties;
@@ -61,20 +62,21 @@ public final class QuickBooksLinkedServiceTypeProperties {
     private Object useEncryptedEndpoints;
 
     /*
-     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime
-     * credential manager. Type: string (or Expression with resultType string).
+     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string.
      */
     @JsonProperty(value = "encryptedCredential")
-    private Object encryptedCredential;
+    private String encryptedCredential;
 
-    /** Creates an instance of QuickBooksLinkedServiceTypeProperties class. */
+    /**
+     * Creates an instance of QuickBooksLinkedServiceTypeProperties class.
+     */
     public QuickBooksLinkedServiceTypeProperties() {
     }
 
     /**
      * Get the connectionProperties property: Properties used to connect to QuickBooks. It is mutually exclusive with
      * any other properties in the linked service. Type: object.
-     *
+     * 
      * @return the connectionProperties value.
      */
     public Object connectionProperties() {
@@ -84,7 +86,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
     /**
      * Set the connectionProperties property: Properties used to connect to QuickBooks. It is mutually exclusive with
      * any other properties in the linked service. Type: object.
-     *
+     * 
      * @param connectionProperties the connectionProperties value to set.
      * @return the QuickBooksLinkedServiceTypeProperties object itself.
      */
@@ -95,7 +97,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Get the endpoint property: The endpoint of the QuickBooks server. (i.e. quickbooks.api.intuit.com).
-     *
+     * 
      * @return the endpoint value.
      */
     public Object endpoint() {
@@ -104,7 +106,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Set the endpoint property: The endpoint of the QuickBooks server. (i.e. quickbooks.api.intuit.com).
-     *
+     * 
      * @param endpoint the endpoint value to set.
      * @return the QuickBooksLinkedServiceTypeProperties object itself.
      */
@@ -115,7 +117,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Get the companyId property: The company ID of the QuickBooks company to authorize.
-     *
+     * 
      * @return the companyId value.
      */
     public Object companyId() {
@@ -124,7 +126,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Set the companyId property: The company ID of the QuickBooks company to authorize.
-     *
+     * 
      * @param companyId the companyId value to set.
      * @return the QuickBooksLinkedServiceTypeProperties object itself.
      */
@@ -135,7 +137,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Get the consumerKey property: The consumer key for OAuth 1.0 authentication.
-     *
+     * 
      * @return the consumerKey value.
      */
     public Object consumerKey() {
@@ -144,7 +146,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Set the consumerKey property: The consumer key for OAuth 1.0 authentication.
-     *
+     * 
      * @param consumerKey the consumerKey value to set.
      * @return the QuickBooksLinkedServiceTypeProperties object itself.
      */
@@ -155,7 +157,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Get the consumerSecret property: The consumer secret for OAuth 1.0 authentication.
-     *
+     * 
      * @return the consumerSecret value.
      */
     public SecretBase consumerSecret() {
@@ -164,7 +166,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Set the consumerSecret property: The consumer secret for OAuth 1.0 authentication.
-     *
+     * 
      * @param consumerSecret the consumerSecret value to set.
      * @return the QuickBooksLinkedServiceTypeProperties object itself.
      */
@@ -175,7 +177,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Get the accessToken property: The access token for OAuth 1.0 authentication.
-     *
+     * 
      * @return the accessToken value.
      */
     public SecretBase accessToken() {
@@ -184,7 +186,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Set the accessToken property: The access token for OAuth 1.0 authentication.
-     *
+     * 
      * @param accessToken the accessToken value to set.
      * @return the QuickBooksLinkedServiceTypeProperties object itself.
      */
@@ -195,7 +197,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Get the accessTokenSecret property: The access token secret for OAuth 1.0 authentication.
-     *
+     * 
      * @return the accessTokenSecret value.
      */
     public SecretBase accessTokenSecret() {
@@ -204,7 +206,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Set the accessTokenSecret property: The access token secret for OAuth 1.0 authentication.
-     *
+     * 
      * @param accessTokenSecret the accessTokenSecret value to set.
      * @return the QuickBooksLinkedServiceTypeProperties object itself.
      */
@@ -216,7 +218,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
     /**
      * Get the useEncryptedEndpoints property: Specifies whether the data source endpoints are encrypted using HTTPS.
      * The default value is true.
-     *
+     * 
      * @return the useEncryptedEndpoints value.
      */
     public Object useEncryptedEndpoints() {
@@ -226,7 +228,7 @@ public final class QuickBooksLinkedServiceTypeProperties {
     /**
      * Set the useEncryptedEndpoints property: Specifies whether the data source endpoints are encrypted using HTTPS.
      * The default value is true.
-     *
+     * 
      * @param useEncryptedEndpoints the useEncryptedEndpoints value to set.
      * @return the QuickBooksLinkedServiceTypeProperties object itself.
      */
@@ -237,29 +239,29 @@ public final class QuickBooksLinkedServiceTypeProperties {
 
     /**
      * Get the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @return the encryptedCredential value.
      */
-    public Object encryptedCredential() {
+    public String encryptedCredential() {
         return this.encryptedCredential;
     }
 
     /**
      * Set the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @param encryptedCredential the encryptedCredential value to set.
      * @return the QuickBooksLinkedServiceTypeProperties object itself.
      */
-    public QuickBooksLinkedServiceTypeProperties withEncryptedCredential(Object encryptedCredential) {
+    public QuickBooksLinkedServiceTypeProperties withEncryptedCredential(String encryptedCredential) {
         this.encryptedCredential = encryptedCredential;
         return this;
     }
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {

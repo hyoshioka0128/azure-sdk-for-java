@@ -11,12 +11,13 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
-/** DataLakeAnalyticsU-SQL activity properties. */
+/**
+ * DataLakeAnalyticsU-SQL activity properties.
+ */
 @Fluent
 public final class DataLakeAnalyticsUsqlActivityTypeProperties {
     /*
-     * Case-sensitive path to folder that contains the U-SQL script. Type: string (or Expression with resultType
-     * string).
+     * Case-sensitive path to folder that contains the U-SQL script. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "scriptPath", required = true)
     private Object scriptPath;
@@ -28,15 +29,13 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
     private LinkedServiceReference scriptLinkedService;
 
     /*
-     * The maximum number of nodes simultaneously used to run the job. Default value is 1. Type: integer (or Expression
-     * with resultType integer), minimum: 1.
+     * The maximum number of nodes simultaneously used to run the job. Default value is 1. Type: integer (or Expression with resultType integer), minimum: 1.
      */
     @JsonProperty(value = "degreeOfParallelism")
     private Object degreeOfParallelism;
 
     /*
-     * Determines which jobs out of all that are queued should be selected to run first. The lower the number, the
-     * higher the priority. Default value is 1000. Type: integer (or Expression with resultType integer), minimum: 1.
+     * Determines which jobs out of all that are queued should be selected to run first. The lower the number, the higher the priority. Default value is 1000. Type: integer (or Expression with resultType integer), minimum: 1.
      */
     @JsonProperty(value = "priority")
     private Object priority;
@@ -55,20 +54,21 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
     private Object runtimeVersion;
 
     /*
-     * Compilation mode of U-SQL. Must be one of these values : Semantic, Full and SingleBox. Type: string (or
-     * Expression with resultType string).
+     * Compilation mode of U-SQL. Must be one of these values : Semantic, Full and SingleBox. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "compilationMode")
     private Object compilationMode;
 
-    /** Creates an instance of DataLakeAnalyticsUsqlActivityTypeProperties class. */
+    /**
+     * Creates an instance of DataLakeAnalyticsUsqlActivityTypeProperties class.
+     */
     public DataLakeAnalyticsUsqlActivityTypeProperties() {
     }
 
     /**
      * Get the scriptPath property: Case-sensitive path to folder that contains the U-SQL script. Type: string (or
      * Expression with resultType string).
-     *
+     * 
      * @return the scriptPath value.
      */
     public Object scriptPath() {
@@ -78,7 +78,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
     /**
      * Set the scriptPath property: Case-sensitive path to folder that contains the U-SQL script. Type: string (or
      * Expression with resultType string).
-     *
+     * 
      * @param scriptPath the scriptPath value to set.
      * @return the DataLakeAnalyticsUsqlActivityTypeProperties object itself.
      */
@@ -89,7 +89,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
 
     /**
      * Get the scriptLinkedService property: Script linked service reference.
-     *
+     * 
      * @return the scriptLinkedService value.
      */
     public LinkedServiceReference scriptLinkedService() {
@@ -98,12 +98,12 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
 
     /**
      * Set the scriptLinkedService property: Script linked service reference.
-     *
+     * 
      * @param scriptLinkedService the scriptLinkedService value to set.
      * @return the DataLakeAnalyticsUsqlActivityTypeProperties object itself.
      */
-    public DataLakeAnalyticsUsqlActivityTypeProperties withScriptLinkedService(
-        LinkedServiceReference scriptLinkedService) {
+    public DataLakeAnalyticsUsqlActivityTypeProperties
+        withScriptLinkedService(LinkedServiceReference scriptLinkedService) {
         this.scriptLinkedService = scriptLinkedService;
         return this;
     }
@@ -111,7 +111,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
     /**
      * Get the degreeOfParallelism property: The maximum number of nodes simultaneously used to run the job. Default
      * value is 1. Type: integer (or Expression with resultType integer), minimum: 1.
-     *
+     * 
      * @return the degreeOfParallelism value.
      */
     public Object degreeOfParallelism() {
@@ -121,7 +121,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
     /**
      * Set the degreeOfParallelism property: The maximum number of nodes simultaneously used to run the job. Default
      * value is 1. Type: integer (or Expression with resultType integer), minimum: 1.
-     *
+     * 
      * @param degreeOfParallelism the degreeOfParallelism value to set.
      * @return the DataLakeAnalyticsUsqlActivityTypeProperties object itself.
      */
@@ -134,7 +134,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
      * Get the priority property: Determines which jobs out of all that are queued should be selected to run first. The
      * lower the number, the higher the priority. Default value is 1000. Type: integer (or Expression with resultType
      * integer), minimum: 1.
-     *
+     * 
      * @return the priority value.
      */
     public Object priority() {
@@ -145,7 +145,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
      * Set the priority property: Determines which jobs out of all that are queued should be selected to run first. The
      * lower the number, the higher the priority. Default value is 1000. Type: integer (or Expression with resultType
      * integer), minimum: 1.
-     *
+     * 
      * @param priority the priority value to set.
      * @return the DataLakeAnalyticsUsqlActivityTypeProperties object itself.
      */
@@ -156,7 +156,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
 
     /**
      * Get the parameters property: Parameters for U-SQL job request.
-     *
+     * 
      * @return the parameters value.
      */
     public Map<String, Object> parameters() {
@@ -165,7 +165,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
 
     /**
      * Set the parameters property: Parameters for U-SQL job request.
-     *
+     * 
      * @param parameters the parameters value to set.
      * @return the DataLakeAnalyticsUsqlActivityTypeProperties object itself.
      */
@@ -177,7 +177,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
     /**
      * Get the runtimeVersion property: Runtime version of the U-SQL engine to use. Type: string (or Expression with
      * resultType string).
-     *
+     * 
      * @return the runtimeVersion value.
      */
     public Object runtimeVersion() {
@@ -187,7 +187,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
     /**
      * Set the runtimeVersion property: Runtime version of the U-SQL engine to use. Type: string (or Expression with
      * resultType string).
-     *
+     * 
      * @param runtimeVersion the runtimeVersion value to set.
      * @return the DataLakeAnalyticsUsqlActivityTypeProperties object itself.
      */
@@ -199,7 +199,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
     /**
      * Get the compilationMode property: Compilation mode of U-SQL. Must be one of these values : Semantic, Full and
      * SingleBox. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the compilationMode value.
      */
     public Object compilationMode() {
@@ -209,7 +209,7 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
     /**
      * Set the compilationMode property: Compilation mode of U-SQL. Must be one of these values : Semantic, Full and
      * SingleBox. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param compilationMode the compilationMode value to set.
      * @return the DataLakeAnalyticsUsqlActivityTypeProperties object itself.
      */
@@ -220,22 +220,19 @@ public final class DataLakeAnalyticsUsqlActivityTypeProperties {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (scriptPath() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property scriptPath in model DataLakeAnalyticsUsqlActivityTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property scriptPath in model DataLakeAnalyticsUsqlActivityTypeProperties"));
         }
         if (scriptLinkedService() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property scriptLinkedService in model"
-                            + " DataLakeAnalyticsUsqlActivityTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property scriptLinkedService in model DataLakeAnalyticsUsqlActivityTypeProperties"));
         } else {
             scriptLinkedService().validate();
         }

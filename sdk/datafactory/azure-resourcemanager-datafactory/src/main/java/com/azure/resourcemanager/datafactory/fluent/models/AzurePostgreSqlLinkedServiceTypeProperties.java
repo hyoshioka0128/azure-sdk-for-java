@@ -8,7 +8,9 @@ import com.azure.core.annotation.Fluent;
 import com.azure.resourcemanager.datafactory.models.AzureKeyVaultSecretReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Azure PostgreSQL linked service properties. */
+/**
+ * Azure PostgreSQL linked service properties.
+ */
 @Fluent
 public final class AzurePostgreSqlLinkedServiceTypeProperties {
     /*
@@ -24,20 +26,21 @@ public final class AzurePostgreSqlLinkedServiceTypeProperties {
     private AzureKeyVaultSecretReference password;
 
     /*
-     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime
-     * credential manager. Type: string (or Expression with resultType string).
+     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string.
      */
     @JsonProperty(value = "encryptedCredential")
-    private Object encryptedCredential;
+    private String encryptedCredential;
 
-    /** Creates an instance of AzurePostgreSqlLinkedServiceTypeProperties class. */
+    /**
+     * Creates an instance of AzurePostgreSqlLinkedServiceTypeProperties class.
+     */
     public AzurePostgreSqlLinkedServiceTypeProperties() {
     }
 
     /**
      * Get the connectionString property: An ODBC connection string. Type: string, SecureString or
      * AzureKeyVaultSecretReference.
-     *
+     * 
      * @return the connectionString value.
      */
     public Object connectionString() {
@@ -47,7 +50,7 @@ public final class AzurePostgreSqlLinkedServiceTypeProperties {
     /**
      * Set the connectionString property: An ODBC connection string. Type: string, SecureString or
      * AzureKeyVaultSecretReference.
-     *
+     * 
      * @param connectionString the connectionString value to set.
      * @return the AzurePostgreSqlLinkedServiceTypeProperties object itself.
      */
@@ -58,7 +61,7 @@ public final class AzurePostgreSqlLinkedServiceTypeProperties {
 
     /**
      * Get the password property: The Azure key vault secret reference of password in connection string.
-     *
+     * 
      * @return the password value.
      */
     public AzureKeyVaultSecretReference password() {
@@ -67,7 +70,7 @@ public final class AzurePostgreSqlLinkedServiceTypeProperties {
 
     /**
      * Set the password property: The Azure key vault secret reference of password in connection string.
-     *
+     * 
      * @param password the password value to set.
      * @return the AzurePostgreSqlLinkedServiceTypeProperties object itself.
      */
@@ -78,29 +81,29 @@ public final class AzurePostgreSqlLinkedServiceTypeProperties {
 
     /**
      * Get the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @return the encryptedCredential value.
      */
-    public Object encryptedCredential() {
+    public String encryptedCredential() {
         return this.encryptedCredential;
     }
 
     /**
      * Set the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @param encryptedCredential the encryptedCredential value to set.
      * @return the AzurePostgreSqlLinkedServiceTypeProperties object itself.
      */
-    public AzurePostgreSqlLinkedServiceTypeProperties withEncryptedCredential(Object encryptedCredential) {
+    public AzurePostgreSqlLinkedServiceTypeProperties withEncryptedCredential(String encryptedCredential) {
         this.encryptedCredential = encryptedCredential;
         return this;
     }
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {

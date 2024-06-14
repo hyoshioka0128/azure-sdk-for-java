@@ -7,7 +7,9 @@ package com.azure.resourcemanager.selfhelp.fluent.models;
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Response for whether the requested resource name is available or not. */
+/**
+ * Response for whether the requested resource name is available or not.
+ */
 @Fluent
 public final class CheckNameAvailabilityResponseInner {
     /*
@@ -23,19 +25,20 @@ public final class CheckNameAvailabilityResponseInner {
     private String reason;
 
     /*
-     * Gets an error message explaining the 'reason' value with more details. This field is returned iif nameAvailable
-     * is false.
+     * Gets an error message explaining the 'reason' value with more details. This field is returned iif nameAvailable is false.
      */
     @JsonProperty(value = "message")
     private String message;
 
-    /** Creates an instance of CheckNameAvailabilityResponseInner class. */
+    /**
+     * Creates an instance of CheckNameAvailabilityResponseInner class.
+     */
     public CheckNameAvailabilityResponseInner() {
     }
 
     /**
      * Get the nameAvailable property: Returns true or false depending on the availability of the name.
-     *
+     * 
      * @return the nameAvailable value.
      */
     public Boolean nameAvailable() {
@@ -44,7 +47,7 @@ public final class CheckNameAvailabilityResponseInner {
 
     /**
      * Set the nameAvailable property: Returns true or false depending on the availability of the name.
-     *
+     * 
      * @param nameAvailable the nameAvailable value to set.
      * @return the CheckNameAvailabilityResponseInner object itself.
      */
@@ -55,7 +58,7 @@ public final class CheckNameAvailabilityResponseInner {
 
     /**
      * Get the reason property: Reason for why value is not available. This field is returned if nameAvailable is false.
-     *
+     * 
      * @return the reason value.
      */
     public String reason() {
@@ -64,7 +67,7 @@ public final class CheckNameAvailabilityResponseInner {
 
     /**
      * Set the reason property: Reason for why value is not available. This field is returned if nameAvailable is false.
-     *
+     * 
      * @param reason the reason value to set.
      * @return the CheckNameAvailabilityResponseInner object itself.
      */
@@ -76,7 +79,7 @@ public final class CheckNameAvailabilityResponseInner {
     /**
      * Get the message property: Gets an error message explaining the 'reason' value with more details. This field is
      * returned iif nameAvailable is false.
-     *
+     * 
      * @return the message value.
      */
     public String message() {
@@ -86,7 +89,7 @@ public final class CheckNameAvailabilityResponseInner {
     /**
      * Set the message property: Gets an error message explaining the 'reason' value with more details. This field is
      * returned iif nameAvailable is false.
-     *
+     * 
      * @param message the message value to set.
      * @return the CheckNameAvailabilityResponseInner object itself.
      */
@@ -97,7 +100,7 @@ public final class CheckNameAvailabilityResponseInner {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {

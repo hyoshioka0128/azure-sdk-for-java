@@ -6,15 +6,31 @@ package com.azure.resourcemanager.storage.models;
 
 import com.azure.core.util.ExpandableStringEnum;
 import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.util.Collection;
 
-/** The encryption keySource (provider). Possible values (case-insensitive): Microsoft.Storage, Microsoft.Keyvault. */
+/**
+ * The encryption keySource (provider). Possible values (case-insensitive): Microsoft.Storage, Microsoft.Keyvault.
+ */
 public final class KeySource extends ExpandableStringEnum<KeySource> {
-    /** Static value Microsoft.Storage for KeySource. */
+    /**
+     * Static value Microsoft.Storage for KeySource.
+     */
     public static final KeySource MICROSOFT_STORAGE = fromString("Microsoft.Storage");
 
-    /** Static value Microsoft.Keyvault for KeySource. */
+    /**
+     * Static value Microsoft.Keyvault for KeySource.
+     */
     public static final KeySource MICROSOFT_KEYVAULT = fromString("Microsoft.Keyvault");
+
+    /**
+     * Creates a new instance of KeySource value.
+     *
+     * @deprecated Use the {@link #fromString(String)} factory method.
+     */
+    @Deprecated
+    public KeySource() {
+    }
 
     /**
      * Creates or finds a KeySource from its string representation.

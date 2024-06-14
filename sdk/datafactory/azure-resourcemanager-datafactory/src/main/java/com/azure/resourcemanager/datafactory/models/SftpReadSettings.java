@@ -6,17 +6,26 @@ package com.azure.resourcemanager.datafactory.models;
 
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-/** Sftp read settings. */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+/**
+ * Sftp read settings.
+ */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = SftpReadSettings.class, visible = true)
 @JsonTypeName("SftpReadSettings")
 @Fluent
 public final class SftpReadSettings extends StoreReadSettings {
     /*
-     * If true, files under the folder path will be read recursively. Default is true. Type: boolean (or Expression
-     * with resultType boolean).
+     * The read setting type.
+     */
+    @JsonTypeId
+    @JsonProperty(value = "type", required = true)
+    private String type = "SftpReadSettings";
+
+    /*
+     * If true, files under the folder path will be read recursively. Default is true. Type: boolean (or Expression with resultType boolean).
      */
     @JsonProperty(value = "recursive")
     private Object recursive;
@@ -34,28 +43,25 @@ public final class SftpReadSettings extends StoreReadSettings {
     private Object wildcardFileName;
 
     /*
-     * Indicates whether to enable partition discovery.
+     * Indicates whether to enable partition discovery. Type: boolean (or Expression with resultType boolean).
      */
     @JsonProperty(value = "enablePartitionDiscovery")
-    private Boolean enablePartitionDiscovery;
+    private Object enablePartitionDiscovery;
 
     /*
-     * Specify the root path where partition discovery starts from. Type: string (or Expression with resultType
-     * string).
+     * Specify the root path where partition discovery starts from. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "partitionRootPath")
     private Object partitionRootPath;
 
     /*
-     * Point to a text file that lists each file (relative path to the path configured in the dataset) that you want to
-     * copy. Type: string (or Expression with resultType string).
+     * Point to a text file that lists each file (relative path to the path configured in the dataset) that you want to copy. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "fileListPath")
     private Object fileListPath;
 
     /*
-     * Indicates whether the source files need to be deleted after copy completion. Default is false. Type: boolean (or
-     * Expression with resultType boolean).
+     * Indicates whether the source files need to be deleted after copy completion. Default is false. Type: boolean (or Expression with resultType boolean).
      */
     @JsonProperty(value = "deleteFilesAfterCompletion")
     private Object deleteFilesAfterCompletion;
@@ -73,20 +79,31 @@ public final class SftpReadSettings extends StoreReadSettings {
     private Object modifiedDatetimeEnd;
 
     /*
-     * If true, disable parallel reading within each file. Default is false. Type: boolean (or Expression with
-     * resultType boolean).
+     * If true, disable parallel reading within each file. Default is false. Type: boolean (or Expression with resultType boolean).
      */
     @JsonProperty(value = "disableChunking")
     private Object disableChunking;
 
-    /** Creates an instance of SftpReadSettings class. */
+    /**
+     * Creates an instance of SftpReadSettings class.
+     */
     public SftpReadSettings() {
+    }
+
+    /**
+     * Get the type property: The read setting type.
+     * 
+     * @return the type value.
+     */
+    @Override
+    public String type() {
+        return this.type;
     }
 
     /**
      * Get the recursive property: If true, files under the folder path will be read recursively. Default is true. Type:
      * boolean (or Expression with resultType boolean).
-     *
+     * 
      * @return the recursive value.
      */
     public Object recursive() {
@@ -96,7 +113,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Set the recursive property: If true, files under the folder path will be read recursively. Default is true. Type:
      * boolean (or Expression with resultType boolean).
-     *
+     * 
      * @param recursive the recursive value to set.
      * @return the SftpReadSettings object itself.
      */
@@ -108,7 +125,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Get the wildcardFolderPath property: Sftp wildcardFolderPath. Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @return the wildcardFolderPath value.
      */
     public Object wildcardFolderPath() {
@@ -118,7 +135,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Set the wildcardFolderPath property: Sftp wildcardFolderPath. Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @param wildcardFolderPath the wildcardFolderPath value to set.
      * @return the SftpReadSettings object itself.
      */
@@ -129,7 +146,7 @@ public final class SftpReadSettings extends StoreReadSettings {
 
     /**
      * Get the wildcardFileName property: Sftp wildcardFileName. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the wildcardFileName value.
      */
     public Object wildcardFileName() {
@@ -138,7 +155,7 @@ public final class SftpReadSettings extends StoreReadSettings {
 
     /**
      * Set the wildcardFileName property: Sftp wildcardFileName. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param wildcardFileName the wildcardFileName value to set.
      * @return the SftpReadSettings object itself.
      */
@@ -148,21 +165,23 @@ public final class SftpReadSettings extends StoreReadSettings {
     }
 
     /**
-     * Get the enablePartitionDiscovery property: Indicates whether to enable partition discovery.
-     *
+     * Get the enablePartitionDiscovery property: Indicates whether to enable partition discovery. Type: boolean (or
+     * Expression with resultType boolean).
+     * 
      * @return the enablePartitionDiscovery value.
      */
-    public Boolean enablePartitionDiscovery() {
+    public Object enablePartitionDiscovery() {
         return this.enablePartitionDiscovery;
     }
 
     /**
-     * Set the enablePartitionDiscovery property: Indicates whether to enable partition discovery.
-     *
+     * Set the enablePartitionDiscovery property: Indicates whether to enable partition discovery. Type: boolean (or
+     * Expression with resultType boolean).
+     * 
      * @param enablePartitionDiscovery the enablePartitionDiscovery value to set.
      * @return the SftpReadSettings object itself.
      */
-    public SftpReadSettings withEnablePartitionDiscovery(Boolean enablePartitionDiscovery) {
+    public SftpReadSettings withEnablePartitionDiscovery(Object enablePartitionDiscovery) {
         this.enablePartitionDiscovery = enablePartitionDiscovery;
         return this;
     }
@@ -170,7 +189,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Get the partitionRootPath property: Specify the root path where partition discovery starts from. Type: string (or
      * Expression with resultType string).
-     *
+     * 
      * @return the partitionRootPath value.
      */
     public Object partitionRootPath() {
@@ -180,7 +199,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Set the partitionRootPath property: Specify the root path where partition discovery starts from. Type: string (or
      * Expression with resultType string).
-     *
+     * 
      * @param partitionRootPath the partitionRootPath value to set.
      * @return the SftpReadSettings object itself.
      */
@@ -192,7 +211,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Get the fileListPath property: Point to a text file that lists each file (relative path to the path configured in
      * the dataset) that you want to copy. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the fileListPath value.
      */
     public Object fileListPath() {
@@ -202,7 +221,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Set the fileListPath property: Point to a text file that lists each file (relative path to the path configured in
      * the dataset) that you want to copy. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param fileListPath the fileListPath value to set.
      * @return the SftpReadSettings object itself.
      */
@@ -214,7 +233,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Get the deleteFilesAfterCompletion property: Indicates whether the source files need to be deleted after copy
      * completion. Default is false. Type: boolean (or Expression with resultType boolean).
-     *
+     * 
      * @return the deleteFilesAfterCompletion value.
      */
     public Object deleteFilesAfterCompletion() {
@@ -224,7 +243,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Set the deleteFilesAfterCompletion property: Indicates whether the source files need to be deleted after copy
      * completion. Default is false. Type: boolean (or Expression with resultType boolean).
-     *
+     * 
      * @param deleteFilesAfterCompletion the deleteFilesAfterCompletion value to set.
      * @return the SftpReadSettings object itself.
      */
@@ -236,7 +255,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Get the modifiedDatetimeStart property: The start of file's modified datetime. Type: string (or Expression with
      * resultType string).
-     *
+     * 
      * @return the modifiedDatetimeStart value.
      */
     public Object modifiedDatetimeStart() {
@@ -246,7 +265,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Set the modifiedDatetimeStart property: The start of file's modified datetime. Type: string (or Expression with
      * resultType string).
-     *
+     * 
      * @param modifiedDatetimeStart the modifiedDatetimeStart value to set.
      * @return the SftpReadSettings object itself.
      */
@@ -258,7 +277,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Get the modifiedDatetimeEnd property: The end of file's modified datetime. Type: string (or Expression with
      * resultType string).
-     *
+     * 
      * @return the modifiedDatetimeEnd value.
      */
     public Object modifiedDatetimeEnd() {
@@ -268,7 +287,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Set the modifiedDatetimeEnd property: The end of file's modified datetime. Type: string (or Expression with
      * resultType string).
-     *
+     * 
      * @param modifiedDatetimeEnd the modifiedDatetimeEnd value to set.
      * @return the SftpReadSettings object itself.
      */
@@ -280,7 +299,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Get the disableChunking property: If true, disable parallel reading within each file. Default is false. Type:
      * boolean (or Expression with resultType boolean).
-     *
+     * 
      * @return the disableChunking value.
      */
     public Object disableChunking() {
@@ -290,7 +309,7 @@ public final class SftpReadSettings extends StoreReadSettings {
     /**
      * Set the disableChunking property: If true, disable parallel reading within each file. Default is false. Type:
      * boolean (or Expression with resultType boolean).
-     *
+     * 
      * @param disableChunking the disableChunking value to set.
      * @return the SftpReadSettings object itself.
      */
@@ -299,14 +318,18 @@ public final class SftpReadSettings extends StoreReadSettings {
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SftpReadSettings withMaxConcurrentConnections(Object maxConcurrentConnections) {
         super.withMaxConcurrentConnections(maxConcurrentConnections);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SftpReadSettings withDisableMetricsCollection(Object disableMetricsCollection) {
         super.withDisableMetricsCollection(disableMetricsCollection);
@@ -315,7 +338,7 @@ public final class SftpReadSettings extends StoreReadSettings {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     @Override

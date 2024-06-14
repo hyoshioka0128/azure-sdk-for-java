@@ -87,11 +87,15 @@ These settings apply only when `--tag=searchindex` is specified on the command l
 ``` yaml $(tag) == 'searchindex'
 namespace: com.azure.search.documents
 input-file:
-- https://raw.githubusercontent.com/Azure/azure-rest-api-specs/0cfd102a6ecb172f04ec915732bd8ca6f6b2a7af/specification/search/data-plane/Azure.Search/preview/2023-07-01-Preview/searchindex.json
-models-subpackage: implementation.models
-custom-types-subpackage: models
-custom-types: AnswerResult,AutocompleteItem,AutocompleteMode,AutocompleteOptions,AutocompleteResult,CaptionResult,FacetResult,IndexActionType,IndexDocumentsResult,IndexingResult,QueryAnswerType,QueryCaptionType,QueryLanguage,QuerySpellerType,QueryType,ScoringStatistics,SearchMode,SuggestOptions,DocumentDebugInfo,SemanticDebugInfo,QueryResultDocumentSemanticField,QueryResultDocumentRerankerInput,SemanticPartialResponseReason,SemanticPartialResponseType,SemanticErrorHandling,QueryDebugMode
+- https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5a1fe448805429403c38a2637ee32c82ba755530/specification/search/data-plane/Azure.Search/preview/2024-05-01-preview/searchindex.json
+models-subpackage: models
+custom-types-subpackage: implementation.models
+custom-types: AutocompleteRequest,IndexAction,IndexBatch,RequestOptions,SearchDocumentsResult,SearchErrorException,SearchOptions,SearchRequest,SearchResult,SuggestDocumentsResult,SuggestRequest,SuggestResult,VectorQueryKind,ErrorAdditionalInfo,ErrorDetail,ErrorResponse,ErrorResponseException,ScalarQuantizationParameters,ScalarQuantizationCompressionConfiguration
 customization-class: src/main/java/SearchIndexCustomizations.java
+directive:
+    - rename-model:
+        from: RawVectorQuery
+        to: VectorizedQuery
 ```
 
 ### Tag: searchservice
@@ -101,10 +105,10 @@ These settings apply only when `--tag=searchservice` is specified on the command
 ``` yaml $(tag) == 'searchservice'
 namespace: com.azure.search.documents.indexes
 input-file:
-- https://raw.githubusercontent.com/Azure/azure-rest-api-specs/0cfd102a6ecb172f04ec915732bd8ca6f6b2a7af/specification/search/data-plane/Azure.Search/preview/2023-07-01-Preview/searchservice.json
+- https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5a1fe448805429403c38a2637ee32c82ba755530/specification/search/data-plane/Azure.Search/preview/2024-05-01-preview/searchservice.json
 models-subpackage: models
 custom-types-subpackage: implementation.models
-custom-types: AnalyzeRequest,AnalyzeResult,AzureActiveDirectoryApplicationCredentials,DataSourceCredentials,DocumentKeysOrIds,EdgeNGramTokenFilterV1,EdgeNGramTokenFilterV2,EntityRecognitionSkillV1,EntityRecognitionSkillV3,KeywordTokenizerV1,KeywordTokenizerV2,ListAliasesResult,ListDataSourcesResult,ListIndexersResult,ListIndexesResult,ListSkillsetsResult,ListSynonymMapsResult,LuceneStandardTokenizerV1,LuceneStandardTokenizerV2,NGramTokenFilterV1,NGramTokenFilterV2,RequestOptions,SearchError,SearchErrorException,SentimentSkillV1,SentimentSkillV3,SkillNames
+custom-types: AnalyzeRequest,AnalyzeResult,AzureActiveDirectoryApplicationCredentials,DataSourceCredentials,DocumentKeysOrIds,EdgeNGramTokenFilterV1,EdgeNGramTokenFilterV2,EntityRecognitionSkillV1,EntityRecognitionSkillV3,KeywordTokenizerV1,KeywordTokenizerV2,ListAliasesResult,ListDataSourcesResult,ListIndexersResult,ListIndexesResult,ListSkillsetsResult,ListSynonymMapsResult,LuceneStandardTokenizerV1,LuceneStandardTokenizerV2,NGramTokenFilterV1,NGramTokenFilterV2,RequestOptions,SearchErrorException,SentimentSkillV1,SentimentSkillV3,SkillNames,VectorSearchAlgorithmKind,ErrorAdditionalInfo,ErrorDetail,ErrorResponse,ErrorResponseException,ScalarQuantizationParameters,ScalarQuantizationCompressionConfiguration
 customization-class: src/main/java/SearchServiceCustomizations.java
 directive:
     - rename-model:
@@ -163,7 +167,7 @@ This swagger is ready for C# and Java.
 ``` yaml
 output-folder: ../
 java: true
-use: '@autorest/java@4.1.17'
+use: '@autorest/java@4.1.25'
 enable-sync-stack: true
 generate-client-interfaces: false
 context-client-method-parameter: true
@@ -212,9 +216,22 @@ directive:
       return $;
 ```
 
+### Set `hybridSearch` property to be type `HybridSearch` in SearchRequest
+
+``` yaml $(tag) == 'searchindex'
+directive:
+  - from: swagger-document
+    where: $.definitions.SearchRequest.properties
+    transform: >
+        delete $.hybridSearch["type"];
+        delete $.hybridSearch.items;
+        $.hybridSearch["$ref"] = "#/definitions/HybridSearch";
+        
+```
+
 ### Remove required from properties that are optional
 
-``` yaml $(java)
+``` yaml $(tag) == 'searchservice'
 directive:
   - from: swagger-document
     where: $.definitions
@@ -225,16 +242,18 @@ directive:
       $.SearchIndexerSkillset.required = $.SearchIndexerSkillset.required.filter(required => required === 'name');
       delete $.SynonymMap.required;
       $.ServiceCounters.required = $.ServiceCounters.required.filter(required => required !== 'aliasesCount' && required !== 'skillsetCount' && required !== 'vectorIndexSize');
+      $.SearchIndexStatistics.required = $.SearchIndexStatistics.required.filter(required => required !== 'vectorIndexSize');
 ```
 
-### Renames 
-``` yaml $(java)
+### Renames
+``` yaml $(tag) == 'searchservice'
 directive:
   - from: swagger-document
     where: $.definitions
     transform: >
       $.ServiceCounters["x-ms-client-name"] = "SearchServiceCounters";
       $.ServiceLimits["x-ms-client-name"] = "SearchServiceLimits";
+      $.ServiceLimits.properties.maxStoragePerIndex["x-ms-client-name"] = "maxStoragePerIndexInBytes";
       $.ServiceStatistics["x-ms-client-name"] = "SearchServiceStatistics";
 ```
 
@@ -256,7 +275,7 @@ directive:
 ```
 
 ### Change SearchField retrievable to hidden
-``` yaml $(java)
+```yaml $(tag) == 'searchservice'
 directive:
   - from: swagger-document
     where: $.definitions.SearchField.properties
@@ -289,14 +308,12 @@ directive:
       $.find(p => p.name === "speller")["x-ms-enum"].name = "QuerySpellerType";
 ```
 
-### Rename Answers to QueryAnswerType, Captions to QueryCaptionType, and Speller to QuerySpellerType
-``` yaml $(java)
+### Rename Speller to QuerySpellerType
+``` yaml $(tag) == 'searchindex'
 directive:
   - from: swagger-document
     where: $.definitions
     transform: >
-      $.Answers["x-ms-enum"].name = "QueryAnswerType";
-      $.Captions["x-ms-enum"].name = "QueryCaptionType";
       $.Speller["x-ms-enum"].name = "QuerySpellerType";
 ```
 
@@ -317,7 +334,7 @@ directive:
       delete param["x-ms-enum"];
 ```
 
-``` yaml $(java)
+``` yaml $(tag) == 'searchindex'
 directive:
   - from: swagger-document
     where: $.definitions
@@ -361,7 +378,7 @@ directive:
 ```
 
 ### Rename PIIDetectionSkillMaskingMode to PiiDetectionSkillMaskingMode
-``` yaml $(java)
+```yaml $(tag) == 'searchservice'
 directive:
   - from: swagger-document
     where: $.definitions.PIIDetectionSkillMaskingMode
@@ -370,7 +387,7 @@ directive:
 ```
 
 ### Rename client parameter names
-``` yaml $(java)
+``` yaml $(tag) == 'searchservice'
 directive:
   - from: swagger-document
     where: $.definitions
@@ -388,4 +405,44 @@ directive:
       $.SynonymTokenFilter.properties.ignoreCase["x-ms-client-name"] = "caseIgnored";
       $.WordDelimiterTokenFilter.properties.catenateWords["x-ms-client-name"] = "wordsCatenated";
       $.WordDelimiterTokenFilter.properties.catenateNumbers["x-ms-client-name"] = "numbersCatenated";
+```
+
+### Add `arm-id` format for `AuthResourceId`
+
+Add `"format": "arm-id"` for `AuthResourceId` to generate as [Azure.Core.ResourceIdentifier](https://learn.microsoft.com/dotnet/api/azure.core.resourceidentifier?view=azure-dotnet).
+
+```yaml $(tag) == 'searchservice'
+directive:
+- from: swagger-document
+  where: $.definitions.WebApiSkill.properties.authResourceId
+  transform: $["x-ms-format"] = "arm-id";
+```
+
+### Rename VectorQuery property `K`
+
+Rename VectorQuery property `K` to `KNearestNeighborsCount`
+
+```yaml $(tag) == 'searchindex'
+directive:
+- from: swagger-document
+  where: $.definitions.VectorQuery.properties.k
+  transform: $["x-ms-client-name"] = "KNearestNeighborsCount";
+```
+
+### Rename `AMLVectorizer` to `AzureMachineLearningVectorizer`
+
+```yaml $(tag) == 'searchservice'
+directive:
+- from: swagger-document
+  where: $.definitions.AMLVectorizer
+  transform: $["x-ms-client-name"] = "AzureMachineLearningVectorizer";
+```
+
+### Rename `AMLParameters` to `AzureMachineLearningParameters`
+
+```yaml $(tag) == 'searchservice'
+directive:
+- from: swagger-document
+  where: $.definitions.AMLParameters
+  transform: $["x-ms-client-name"] = "AzureMachineLearningParameters";
 ```

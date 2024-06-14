@@ -12,12 +12,13 @@ import com.azure.resourcemanager.datafactory.models.HiveThriftTransportProtocol;
 import com.azure.resourcemanager.datafactory.models.SecretBase;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Hive Server linked service properties. */
+/**
+ * Hive Server linked service properties.
+ */
 @Fluent
 public final class HiveLinkedServiceTypeProperties {
     /*
-     * IP address or host name of the Hive server, separated by ';' for multiple hosts (only when serviceDiscoveryMode
-     * is enable).
+     * IP address or host name of the Hive server, separated by ';' for multiple hosts (only when serviceDiscoveryMode is enable).
      */
     @JsonProperty(value = "host", required = true)
     private Object host;
@@ -89,23 +90,19 @@ public final class HiveLinkedServiceTypeProperties {
     private Object enableSsl;
 
     /*
-     * The full path of the .pem file containing trusted CA certificates for verifying the server when connecting over
-     * SSL. This property can only be set when using SSL on self-hosted IR. The default value is the cacerts.pem file
-     * installed with the IR.
+     * The full path of the .pem file containing trusted CA certificates for verifying the server when connecting over SSL. This property can only be set when using SSL on self-hosted IR. The default value is the cacerts.pem file installed with the IR.
      */
     @JsonProperty(value = "trustedCertPath")
     private Object trustedCertPath;
 
     /*
-     * Specifies whether to use a CA certificate from the system trust store or from a specified PEM file. The default
-     * value is false.
+     * Specifies whether to use a CA certificate from the system trust store or from a specified PEM file. The default value is false.
      */
     @JsonProperty(value = "useSystemTrustStore")
     private Object useSystemTrustStore;
 
     /*
-     * Specifies whether to require a CA-issued SSL certificate name to match the host name of the server when
-     * connecting over SSL. The default value is false.
+     * Specifies whether to require a CA-issued SSL certificate name to match the host name of the server when connecting over SSL. The default value is false.
      */
     @JsonProperty(value = "allowHostNameCNMismatch")
     private Object allowHostnameCNMismatch;
@@ -117,20 +114,21 @@ public final class HiveLinkedServiceTypeProperties {
     private Object allowSelfSignedServerCert;
 
     /*
-     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime
-     * credential manager. Type: string (or Expression with resultType string).
+     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string.
      */
     @JsonProperty(value = "encryptedCredential")
-    private Object encryptedCredential;
+    private String encryptedCredential;
 
-    /** Creates an instance of HiveLinkedServiceTypeProperties class. */
+    /**
+     * Creates an instance of HiveLinkedServiceTypeProperties class.
+     */
     public HiveLinkedServiceTypeProperties() {
     }
 
     /**
      * Get the host property: IP address or host name of the Hive server, separated by ';' for multiple hosts (only when
      * serviceDiscoveryMode is enable).
-     *
+     * 
      * @return the host value.
      */
     public Object host() {
@@ -140,7 +138,7 @@ public final class HiveLinkedServiceTypeProperties {
     /**
      * Set the host property: IP address or host name of the Hive server, separated by ';' for multiple hosts (only when
      * serviceDiscoveryMode is enable).
-     *
+     * 
      * @param host the host value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -151,7 +149,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Get the port property: The TCP port that the Hive server uses to listen for client connections.
-     *
+     * 
      * @return the port value.
      */
     public Object port() {
@@ -160,7 +158,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Set the port property: The TCP port that the Hive server uses to listen for client connections.
-     *
+     * 
      * @param port the port value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -171,7 +169,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Get the serverType property: The type of Hive server.
-     *
+     * 
      * @return the serverType value.
      */
     public HiveServerType serverType() {
@@ -180,7 +178,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Set the serverType property: The type of Hive server.
-     *
+     * 
      * @param serverType the serverType value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -191,7 +189,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Get the thriftTransportProtocol property: The transport protocol to use in the Thrift layer.
-     *
+     * 
      * @return the thriftTransportProtocol value.
      */
     public HiveThriftTransportProtocol thriftTransportProtocol() {
@@ -200,19 +198,19 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Set the thriftTransportProtocol property: The transport protocol to use in the Thrift layer.
-     *
+     * 
      * @param thriftTransportProtocol the thriftTransportProtocol value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
-    public HiveLinkedServiceTypeProperties withThriftTransportProtocol(
-        HiveThriftTransportProtocol thriftTransportProtocol) {
+    public HiveLinkedServiceTypeProperties
+        withThriftTransportProtocol(HiveThriftTransportProtocol thriftTransportProtocol) {
         this.thriftTransportProtocol = thriftTransportProtocol;
         return this;
     }
 
     /**
      * Get the authenticationType property: The authentication method used to access the Hive server.
-     *
+     * 
      * @return the authenticationType value.
      */
     public HiveAuthenticationType authenticationType() {
@@ -221,7 +219,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Set the authenticationType property: The authentication method used to access the Hive server.
-     *
+     * 
      * @param authenticationType the authenticationType value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -232,7 +230,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Get the serviceDiscoveryMode property: true to indicate using the ZooKeeper service, false not.
-     *
+     * 
      * @return the serviceDiscoveryMode value.
      */
     public Object serviceDiscoveryMode() {
@@ -241,7 +239,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Set the serviceDiscoveryMode property: true to indicate using the ZooKeeper service, false not.
-     *
+     * 
      * @param serviceDiscoveryMode the serviceDiscoveryMode value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -252,7 +250,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Get the zooKeeperNameSpace property: The namespace on ZooKeeper under which Hive Server 2 nodes are added.
-     *
+     * 
      * @return the zooKeeperNameSpace value.
      */
     public Object zooKeeperNameSpace() {
@@ -261,7 +259,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Set the zooKeeperNameSpace property: The namespace on ZooKeeper under which Hive Server 2 nodes are added.
-     *
+     * 
      * @param zooKeeperNameSpace the zooKeeperNameSpace value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -273,7 +271,7 @@ public final class HiveLinkedServiceTypeProperties {
     /**
      * Get the useNativeQuery property: Specifies whether the driver uses native HiveQL queries,or converts them into an
      * equivalent form in HiveQL.
-     *
+     * 
      * @return the useNativeQuery value.
      */
     public Object useNativeQuery() {
@@ -283,7 +281,7 @@ public final class HiveLinkedServiceTypeProperties {
     /**
      * Set the useNativeQuery property: Specifies whether the driver uses native HiveQL queries,or converts them into an
      * equivalent form in HiveQL.
-     *
+     * 
      * @param useNativeQuery the useNativeQuery value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -294,7 +292,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Get the username property: The user name that you use to access Hive Server.
-     *
+     * 
      * @return the username value.
      */
     public Object username() {
@@ -303,7 +301,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Set the username property: The user name that you use to access Hive Server.
-     *
+     * 
      * @param username the username value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -314,7 +312,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Get the password property: The password corresponding to the user name that you provided in the Username field.
-     *
+     * 
      * @return the password value.
      */
     public SecretBase password() {
@@ -323,7 +321,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Set the password property: The password corresponding to the user name that you provided in the Username field.
-     *
+     * 
      * @param password the password value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -334,7 +332,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Get the httpPath property: The partial URL corresponding to the Hive server.
-     *
+     * 
      * @return the httpPath value.
      */
     public Object httpPath() {
@@ -343,7 +341,7 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Set the httpPath property: The partial URL corresponding to the Hive server.
-     *
+     * 
      * @param httpPath the httpPath value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -355,7 +353,7 @@ public final class HiveLinkedServiceTypeProperties {
     /**
      * Get the enableSsl property: Specifies whether the connections to the server are encrypted using SSL. The default
      * value is false.
-     *
+     * 
      * @return the enableSsl value.
      */
     public Object enableSsl() {
@@ -365,7 +363,7 @@ public final class HiveLinkedServiceTypeProperties {
     /**
      * Set the enableSsl property: Specifies whether the connections to the server are encrypted using SSL. The default
      * value is false.
-     *
+     * 
      * @param enableSsl the enableSsl value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -378,7 +376,7 @@ public final class HiveLinkedServiceTypeProperties {
      * Get the trustedCertPath property: The full path of the .pem file containing trusted CA certificates for verifying
      * the server when connecting over SSL. This property can only be set when using SSL on self-hosted IR. The default
      * value is the cacerts.pem file installed with the IR.
-     *
+     * 
      * @return the trustedCertPath value.
      */
     public Object trustedCertPath() {
@@ -389,7 +387,7 @@ public final class HiveLinkedServiceTypeProperties {
      * Set the trustedCertPath property: The full path of the .pem file containing trusted CA certificates for verifying
      * the server when connecting over SSL. This property can only be set when using SSL on self-hosted IR. The default
      * value is the cacerts.pem file installed with the IR.
-     *
+     * 
      * @param trustedCertPath the trustedCertPath value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -401,7 +399,7 @@ public final class HiveLinkedServiceTypeProperties {
     /**
      * Get the useSystemTrustStore property: Specifies whether to use a CA certificate from the system trust store or
      * from a specified PEM file. The default value is false.
-     *
+     * 
      * @return the useSystemTrustStore value.
      */
     public Object useSystemTrustStore() {
@@ -411,7 +409,7 @@ public final class HiveLinkedServiceTypeProperties {
     /**
      * Set the useSystemTrustStore property: Specifies whether to use a CA certificate from the system trust store or
      * from a specified PEM file. The default value is false.
-     *
+     * 
      * @param useSystemTrustStore the useSystemTrustStore value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -423,7 +421,7 @@ public final class HiveLinkedServiceTypeProperties {
     /**
      * Get the allowHostnameCNMismatch property: Specifies whether to require a CA-issued SSL certificate name to match
      * the host name of the server when connecting over SSL. The default value is false.
-     *
+     * 
      * @return the allowHostnameCNMismatch value.
      */
     public Object allowHostnameCNMismatch() {
@@ -433,7 +431,7 @@ public final class HiveLinkedServiceTypeProperties {
     /**
      * Set the allowHostnameCNMismatch property: Specifies whether to require a CA-issued SSL certificate name to match
      * the host name of the server when connecting over SSL. The default value is false.
-     *
+     * 
      * @param allowHostnameCNMismatch the allowHostnameCNMismatch value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -445,7 +443,7 @@ public final class HiveLinkedServiceTypeProperties {
     /**
      * Get the allowSelfSignedServerCert property: Specifies whether to allow self-signed certificates from the server.
      * The default value is false.
-     *
+     * 
      * @return the allowSelfSignedServerCert value.
      */
     public Object allowSelfSignedServerCert() {
@@ -455,7 +453,7 @@ public final class HiveLinkedServiceTypeProperties {
     /**
      * Set the allowSelfSignedServerCert property: Specifies whether to allow self-signed certificates from the server.
      * The default value is false.
-     *
+     * 
      * @param allowSelfSignedServerCert the allowSelfSignedServerCert value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
@@ -466,43 +464,41 @@ public final class HiveLinkedServiceTypeProperties {
 
     /**
      * Get the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @return the encryptedCredential value.
      */
-    public Object encryptedCredential() {
+    public String encryptedCredential() {
         return this.encryptedCredential;
     }
 
     /**
      * Set the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @param encryptedCredential the encryptedCredential value to set.
      * @return the HiveLinkedServiceTypeProperties object itself.
      */
-    public HiveLinkedServiceTypeProperties withEncryptedCredential(Object encryptedCredential) {
+    public HiveLinkedServiceTypeProperties withEncryptedCredential(String encryptedCredential) {
         this.encryptedCredential = encryptedCredential;
         return this;
     }
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (host() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property host in model HiveLinkedServiceTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property host in model HiveLinkedServiceTypeProperties"));
         }
         if (authenticationType() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property authenticationType in model HiveLinkedServiceTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property authenticationType in model HiveLinkedServiceTypeProperties"));
         }
         if (password() != null) {
             password().validate();

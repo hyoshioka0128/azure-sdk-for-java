@@ -6,29 +6,50 @@ package com.azure.resourcemanager.datafactory.models;
 
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-/** Json write settings. */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+/**
+ * Json write settings.
+ */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = JsonWriteSettings.class, visible = true)
 @JsonTypeName("JsonWriteSettings")
 @Fluent
 public final class JsonWriteSettings extends FormatWriteSettings {
     /*
-     * File pattern of JSON. This setting controls the way a collection of JSON objects will be treated. The default
-     * value is 'setOfObjects'. It is case-sensitive.
+     * The write setting type.
+     */
+    @JsonTypeId
+    @JsonProperty(value = "type", required = true)
+    private String type = "JsonWriteSettings";
+
+    /*
+     * File pattern of JSON. This setting controls the way a collection of JSON objects will be treated. The default value is 'setOfObjects'. It is case-sensitive.
      */
     @JsonProperty(value = "filePattern")
     private Object filePattern;
 
-    /** Creates an instance of JsonWriteSettings class. */
+    /**
+     * Creates an instance of JsonWriteSettings class.
+     */
     public JsonWriteSettings() {
+    }
+
+    /**
+     * Get the type property: The write setting type.
+     * 
+     * @return the type value.
+     */
+    @Override
+    public String type() {
+        return this.type;
     }
 
     /**
      * Get the filePattern property: File pattern of JSON. This setting controls the way a collection of JSON objects
      * will be treated. The default value is 'setOfObjects'. It is case-sensitive.
-     *
+     * 
      * @return the filePattern value.
      */
     public Object filePattern() {
@@ -38,7 +59,7 @@ public final class JsonWriteSettings extends FormatWriteSettings {
     /**
      * Set the filePattern property: File pattern of JSON. This setting controls the way a collection of JSON objects
      * will be treated. The default value is 'setOfObjects'. It is case-sensitive.
-     *
+     * 
      * @param filePattern the filePattern value to set.
      * @return the JsonWriteSettings object itself.
      */
@@ -49,7 +70,7 @@ public final class JsonWriteSettings extends FormatWriteSettings {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     @Override

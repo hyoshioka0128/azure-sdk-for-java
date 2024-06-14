@@ -10,24 +10,33 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Integration runtime status. */
+/**
+ * Integration runtime status.
+ */
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
     property = "type",
-    defaultImpl = IntegrationRuntimeStatus.class)
+    defaultImpl = IntegrationRuntimeStatus.class,
+    visible = true)
 @JsonTypeName("IntegrationRuntimeStatus")
 @JsonSubTypes({
     @JsonSubTypes.Type(name = "Managed", value = ManagedIntegrationRuntimeStatus.class),
-    @JsonSubTypes.Type(name = "SelfHosted", value = SelfHostedIntegrationRuntimeStatus.class)
-})
+    @JsonSubTypes.Type(name = "SelfHosted", value = SelfHostedIntegrationRuntimeStatus.class) })
 @Fluent
 public class IntegrationRuntimeStatus {
+    /*
+     * Type of integration runtime.
+     */
+    @JsonTypeId
+    @JsonProperty(value = "type", required = true)
+    private IntegrationRuntimeType type;
+
     /*
      * The data factory name which the integration runtime belong to.
      */
@@ -43,15 +52,28 @@ public class IntegrationRuntimeStatus {
     /*
      * Integration runtime status.
      */
-    @JsonIgnore private Map<String, Object> additionalProperties;
+    @JsonIgnore
+    private Map<String, Object> additionalProperties;
 
-    /** Creates an instance of IntegrationRuntimeStatus class. */
+    /**
+     * Creates an instance of IntegrationRuntimeStatus class.
+     */
     public IntegrationRuntimeStatus() {
+        this.type = IntegrationRuntimeType.fromString("IntegrationRuntimeStatus");
+    }
+
+    /**
+     * Get the type property: Type of integration runtime.
+     * 
+     * @return the type value.
+     */
+    public IntegrationRuntimeType type() {
+        return this.type;
     }
 
     /**
      * Get the dataFactoryName property: The data factory name which the integration runtime belong to.
-     *
+     * 
      * @return the dataFactoryName value.
      */
     public String dataFactoryName() {
@@ -60,7 +82,7 @@ public class IntegrationRuntimeStatus {
 
     /**
      * Get the state property: The state of integration runtime.
-     *
+     * 
      * @return the state value.
      */
     public IntegrationRuntimeState state() {
@@ -69,7 +91,7 @@ public class IntegrationRuntimeStatus {
 
     /**
      * Get the additionalProperties property: Integration runtime status.
-     *
+     * 
      * @return the additionalProperties value.
      */
     @JsonAnyGetter
@@ -79,7 +101,7 @@ public class IntegrationRuntimeStatus {
 
     /**
      * Set the additionalProperties property: Integration runtime status.
-     *
+     * 
      * @param additionalProperties the additionalProperties value to set.
      * @return the IntegrationRuntimeStatus object itself.
      */
@@ -98,7 +120,7 @@ public class IntegrationRuntimeStatus {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {

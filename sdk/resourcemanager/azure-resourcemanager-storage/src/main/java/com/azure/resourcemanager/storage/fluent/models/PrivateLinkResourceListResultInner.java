@@ -7,9 +7,12 @@ package com.azure.resourcemanager.storage.fluent.models;
 import com.azure.core.annotation.Fluent;
 import com.azure.resourcemanager.storage.models.PrivateLinkResource;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
-/** A list of private link resources. */
+/**
+ * A list of private link resources.
+ */
 @Fluent
 public final class PrivateLinkResourceListResultInner {
     /*
@@ -17,6 +20,12 @@ public final class PrivateLinkResourceListResultInner {
      */
     @JsonProperty(value = "value")
     private List<PrivateLinkResource> value;
+
+    /**
+     * Creates an instance of PrivateLinkResourceListResultInner class.
+     */
+    public PrivateLinkResourceListResultInner() {
+    }
 
     /**
      * Get the value property: Array of private link resources.

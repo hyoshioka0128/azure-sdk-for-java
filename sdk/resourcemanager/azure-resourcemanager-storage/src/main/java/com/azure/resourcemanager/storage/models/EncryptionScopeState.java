@@ -6,15 +6,31 @@ package com.azure.resourcemanager.storage.models;
 
 import com.azure.core.util.ExpandableStringEnum;
 import com.fasterxml.jackson.annotation.JsonCreator;
+
 import java.util.Collection;
 
-/** The state of the encryption scope. Possible values (case-insensitive): Enabled, Disabled. */
+/**
+ * The state of the encryption scope. Possible values (case-insensitive): Enabled, Disabled.
+ */
 public final class EncryptionScopeState extends ExpandableStringEnum<EncryptionScopeState> {
-    /** Static value Enabled for EncryptionScopeState. */
+    /**
+     * Static value Enabled for EncryptionScopeState.
+     */
     public static final EncryptionScopeState ENABLED = fromString("Enabled");
 
-    /** Static value Disabled for EncryptionScopeState. */
+    /**
+     * Static value Disabled for EncryptionScopeState.
+     */
     public static final EncryptionScopeState DISABLED = fromString("Disabled");
+
+    /**
+     * Creates a new instance of EncryptionScopeState value.
+     *
+     * @deprecated Use the {@link #fromString(String)} factory method.
+     */
+    @Deprecated
+    public EncryptionScopeState() {
+    }
 
     /**
      * Creates or finds a EncryptionScopeState from its string representation.

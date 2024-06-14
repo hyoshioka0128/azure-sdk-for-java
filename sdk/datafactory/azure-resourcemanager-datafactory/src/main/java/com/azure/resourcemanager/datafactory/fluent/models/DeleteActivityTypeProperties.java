@@ -11,12 +11,13 @@ import com.azure.resourcemanager.datafactory.models.LogStorageSettings;
 import com.azure.resourcemanager.datafactory.models.StoreReadSettings;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Delete activity properties. */
+/**
+ * Delete activity properties.
+ */
 @Fluent
 public final class DeleteActivityTypeProperties {
     /*
-     * If true, files or sub-folders under current folder path will be deleted recursively. Default is false. Type:
-     * boolean (or Expression with resultType boolean).
+     * If true, files or sub-folders under current folder path will be deleted recursively. Default is false. Type: boolean (or Expression with resultType boolean).
      */
     @JsonProperty(value = "recursive")
     private Object recursive;
@@ -28,8 +29,7 @@ public final class DeleteActivityTypeProperties {
     private Integer maxConcurrentConnections;
 
     /*
-     * Whether to record detailed logs of delete-activity execution. Default value is false. Type: boolean (or
-     * Expression with resultType boolean).
+     * Whether to record detailed logs of delete-activity execution. Default value is false. Type: boolean (or Expression with resultType boolean).
      */
     @JsonProperty(value = "enableLogging")
     private Object enableLogging;
@@ -52,14 +52,16 @@ public final class DeleteActivityTypeProperties {
     @JsonProperty(value = "storeSettings")
     private StoreReadSettings storeSettings;
 
-    /** Creates an instance of DeleteActivityTypeProperties class. */
+    /**
+     * Creates an instance of DeleteActivityTypeProperties class.
+     */
     public DeleteActivityTypeProperties() {
     }
 
     /**
      * Get the recursive property: If true, files or sub-folders under current folder path will be deleted recursively.
      * Default is false. Type: boolean (or Expression with resultType boolean).
-     *
+     * 
      * @return the recursive value.
      */
     public Object recursive() {
@@ -69,7 +71,7 @@ public final class DeleteActivityTypeProperties {
     /**
      * Set the recursive property: If true, files or sub-folders under current folder path will be deleted recursively.
      * Default is false. Type: boolean (or Expression with resultType boolean).
-     *
+     * 
      * @param recursive the recursive value to set.
      * @return the DeleteActivityTypeProperties object itself.
      */
@@ -81,7 +83,7 @@ public final class DeleteActivityTypeProperties {
     /**
      * Get the maxConcurrentConnections property: The max concurrent connections to connect data source at the same
      * time.
-     *
+     * 
      * @return the maxConcurrentConnections value.
      */
     public Integer maxConcurrentConnections() {
@@ -91,7 +93,7 @@ public final class DeleteActivityTypeProperties {
     /**
      * Set the maxConcurrentConnections property: The max concurrent connections to connect data source at the same
      * time.
-     *
+     * 
      * @param maxConcurrentConnections the maxConcurrentConnections value to set.
      * @return the DeleteActivityTypeProperties object itself.
      */
@@ -103,7 +105,7 @@ public final class DeleteActivityTypeProperties {
     /**
      * Get the enableLogging property: Whether to record detailed logs of delete-activity execution. Default value is
      * false. Type: boolean (or Expression with resultType boolean).
-     *
+     * 
      * @return the enableLogging value.
      */
     public Object enableLogging() {
@@ -113,7 +115,7 @@ public final class DeleteActivityTypeProperties {
     /**
      * Set the enableLogging property: Whether to record detailed logs of delete-activity execution. Default value is
      * false. Type: boolean (or Expression with resultType boolean).
-     *
+     * 
      * @param enableLogging the enableLogging value to set.
      * @return the DeleteActivityTypeProperties object itself.
      */
@@ -124,7 +126,7 @@ public final class DeleteActivityTypeProperties {
 
     /**
      * Get the logStorageSettings property: Log storage settings customer need to provide when enableLogging is true.
-     *
+     * 
      * @return the logStorageSettings value.
      */
     public LogStorageSettings logStorageSettings() {
@@ -133,7 +135,7 @@ public final class DeleteActivityTypeProperties {
 
     /**
      * Set the logStorageSettings property: Log storage settings customer need to provide when enableLogging is true.
-     *
+     * 
      * @param logStorageSettings the logStorageSettings value to set.
      * @return the DeleteActivityTypeProperties object itself.
      */
@@ -144,7 +146,7 @@ public final class DeleteActivityTypeProperties {
 
     /**
      * Get the dataset property: Delete activity dataset reference.
-     *
+     * 
      * @return the dataset value.
      */
     public DatasetReference dataset() {
@@ -153,7 +155,7 @@ public final class DeleteActivityTypeProperties {
 
     /**
      * Set the dataset property: Delete activity dataset reference.
-     *
+     * 
      * @param dataset the dataset value to set.
      * @return the DeleteActivityTypeProperties object itself.
      */
@@ -164,7 +166,7 @@ public final class DeleteActivityTypeProperties {
 
     /**
      * Get the storeSettings property: Delete activity store settings.
-     *
+     * 
      * @return the storeSettings value.
      */
     public StoreReadSettings storeSettings() {
@@ -173,7 +175,7 @@ public final class DeleteActivityTypeProperties {
 
     /**
      * Set the storeSettings property: Delete activity store settings.
-     *
+     * 
      * @param storeSettings the storeSettings value to set.
      * @return the DeleteActivityTypeProperties object itself.
      */
@@ -184,7 +186,7 @@ public final class DeleteActivityTypeProperties {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
@@ -192,10 +194,9 @@ public final class DeleteActivityTypeProperties {
             logStorageSettings().validate();
         }
         if (dataset() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property dataset in model DeleteActivityTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property dataset in model DeleteActivityTypeProperties"));
         } else {
             dataset().validate();
         }

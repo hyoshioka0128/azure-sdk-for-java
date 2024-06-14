@@ -9,7 +9,9 @@ import com.azure.core.util.logging.ClientLogger;
 import com.azure.resourcemanager.datafactory.models.SecretBase;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Magento server linked service properties. */
+/**
+ * Magento server linked service properties.
+ */
 @Fluent
 public final class MagentoLinkedServiceTypeProperties {
     /*
@@ -31,8 +33,7 @@ public final class MagentoLinkedServiceTypeProperties {
     private Object useEncryptedEndpoints;
 
     /*
-     * Specifies whether to require the host name in the server's certificate to match the host name of the server when
-     * connecting over SSL. The default value is true.
+     * Specifies whether to require the host name in the server's certificate to match the host name of the server when connecting over SSL. The default value is true.
      */
     @JsonProperty(value = "useHostVerification")
     private Object useHostVerification;
@@ -44,19 +45,20 @@ public final class MagentoLinkedServiceTypeProperties {
     private Object usePeerVerification;
 
     /*
-     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime
-     * credential manager. Type: string (or Expression with resultType string).
+     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string.
      */
     @JsonProperty(value = "encryptedCredential")
-    private Object encryptedCredential;
+    private String encryptedCredential;
 
-    /** Creates an instance of MagentoLinkedServiceTypeProperties class. */
+    /**
+     * Creates an instance of MagentoLinkedServiceTypeProperties class.
+     */
     public MagentoLinkedServiceTypeProperties() {
     }
 
     /**
      * Get the host property: The URL of the Magento instance. (i.e. 192.168.222.110/magento3).
-     *
+     * 
      * @return the host value.
      */
     public Object host() {
@@ -65,7 +67,7 @@ public final class MagentoLinkedServiceTypeProperties {
 
     /**
      * Set the host property: The URL of the Magento instance. (i.e. 192.168.222.110/magento3).
-     *
+     * 
      * @param host the host value to set.
      * @return the MagentoLinkedServiceTypeProperties object itself.
      */
@@ -76,7 +78,7 @@ public final class MagentoLinkedServiceTypeProperties {
 
     /**
      * Get the accessToken property: The access token from Magento.
-     *
+     * 
      * @return the accessToken value.
      */
     public SecretBase accessToken() {
@@ -85,7 +87,7 @@ public final class MagentoLinkedServiceTypeProperties {
 
     /**
      * Set the accessToken property: The access token from Magento.
-     *
+     * 
      * @param accessToken the accessToken value to set.
      * @return the MagentoLinkedServiceTypeProperties object itself.
      */
@@ -97,7 +99,7 @@ public final class MagentoLinkedServiceTypeProperties {
     /**
      * Get the useEncryptedEndpoints property: Specifies whether the data source endpoints are encrypted using HTTPS.
      * The default value is true.
-     *
+     * 
      * @return the useEncryptedEndpoints value.
      */
     public Object useEncryptedEndpoints() {
@@ -107,7 +109,7 @@ public final class MagentoLinkedServiceTypeProperties {
     /**
      * Set the useEncryptedEndpoints property: Specifies whether the data source endpoints are encrypted using HTTPS.
      * The default value is true.
-     *
+     * 
      * @param useEncryptedEndpoints the useEncryptedEndpoints value to set.
      * @return the MagentoLinkedServiceTypeProperties object itself.
      */
@@ -119,7 +121,7 @@ public final class MagentoLinkedServiceTypeProperties {
     /**
      * Get the useHostVerification property: Specifies whether to require the host name in the server's certificate to
      * match the host name of the server when connecting over SSL. The default value is true.
-     *
+     * 
      * @return the useHostVerification value.
      */
     public Object useHostVerification() {
@@ -129,7 +131,7 @@ public final class MagentoLinkedServiceTypeProperties {
     /**
      * Set the useHostVerification property: Specifies whether to require the host name in the server's certificate to
      * match the host name of the server when connecting over SSL. The default value is true.
-     *
+     * 
      * @param useHostVerification the useHostVerification value to set.
      * @return the MagentoLinkedServiceTypeProperties object itself.
      */
@@ -141,7 +143,7 @@ public final class MagentoLinkedServiceTypeProperties {
     /**
      * Get the usePeerVerification property: Specifies whether to verify the identity of the server when connecting over
      * SSL. The default value is true.
-     *
+     * 
      * @return the usePeerVerification value.
      */
     public Object usePeerVerification() {
@@ -151,7 +153,7 @@ public final class MagentoLinkedServiceTypeProperties {
     /**
      * Set the usePeerVerification property: Specifies whether to verify the identity of the server when connecting over
      * SSL. The default value is true.
-     *
+     * 
      * @param usePeerVerification the usePeerVerification value to set.
      * @return the MagentoLinkedServiceTypeProperties object itself.
      */
@@ -162,37 +164,36 @@ public final class MagentoLinkedServiceTypeProperties {
 
     /**
      * Get the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @return the encryptedCredential value.
      */
-    public Object encryptedCredential() {
+    public String encryptedCredential() {
         return this.encryptedCredential;
     }
 
     /**
      * Set the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @param encryptedCredential the encryptedCredential value to set.
      * @return the MagentoLinkedServiceTypeProperties object itself.
      */
-    public MagentoLinkedServiceTypeProperties withEncryptedCredential(Object encryptedCredential) {
+    public MagentoLinkedServiceTypeProperties withEncryptedCredential(String encryptedCredential) {
         this.encryptedCredential = encryptedCredential;
         return this;
     }
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (host() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property host in model MagentoLinkedServiceTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property host in model MagentoLinkedServiceTypeProperties"));
         }
         if (accessToken() != null) {
             accessToken().validate();

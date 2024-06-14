@@ -9,7 +9,9 @@ import com.azure.resourcemanager.datafactory.models.SapHanaAuthenticationType;
 import com.azure.resourcemanager.datafactory.models.SecretBase;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Properties specific to this linked service type. */
+/**
+ * Properties specific to this linked service type.
+ */
 @Fluent
 public final class SapHanaLinkedServiceProperties {
     /*
@@ -43,20 +45,21 @@ public final class SapHanaLinkedServiceProperties {
     private SecretBase password;
 
     /*
-     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime
-     * credential manager. Type: string (or Expression with resultType string).
+     * The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string.
      */
     @JsonProperty(value = "encryptedCredential")
-    private Object encryptedCredential;
+    private String encryptedCredential;
 
-    /** Creates an instance of SapHanaLinkedServiceProperties class. */
+    /**
+     * Creates an instance of SapHanaLinkedServiceProperties class.
+     */
     public SapHanaLinkedServiceProperties() {
     }
 
     /**
      * Get the connectionString property: SAP HANA ODBC connection string. Type: string, SecureString or
      * AzureKeyVaultSecretReference.
-     *
+     * 
      * @return the connectionString value.
      */
     public Object connectionString() {
@@ -66,7 +69,7 @@ public final class SapHanaLinkedServiceProperties {
     /**
      * Set the connectionString property: SAP HANA ODBC connection string. Type: string, SecureString or
      * AzureKeyVaultSecretReference.
-     *
+     * 
      * @param connectionString the connectionString value to set.
      * @return the SapHanaLinkedServiceProperties object itself.
      */
@@ -77,7 +80,7 @@ public final class SapHanaLinkedServiceProperties {
 
     /**
      * Get the server property: Host name of the SAP HANA server. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the server value.
      */
     public Object server() {
@@ -86,7 +89,7 @@ public final class SapHanaLinkedServiceProperties {
 
     /**
      * Set the server property: Host name of the SAP HANA server. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param server the server value to set.
      * @return the SapHanaLinkedServiceProperties object itself.
      */
@@ -97,7 +100,7 @@ public final class SapHanaLinkedServiceProperties {
 
     /**
      * Get the authenticationType property: The authentication type to be used to connect to the SAP HANA server.
-     *
+     * 
      * @return the authenticationType value.
      */
     public SapHanaAuthenticationType authenticationType() {
@@ -106,7 +109,7 @@ public final class SapHanaLinkedServiceProperties {
 
     /**
      * Set the authenticationType property: The authentication type to be used to connect to the SAP HANA server.
-     *
+     * 
      * @param authenticationType the authenticationType value to set.
      * @return the SapHanaLinkedServiceProperties object itself.
      */
@@ -118,7 +121,7 @@ public final class SapHanaLinkedServiceProperties {
     /**
      * Get the username property: Username to access the SAP HANA server. Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @return the username value.
      */
     public Object username() {
@@ -128,7 +131,7 @@ public final class SapHanaLinkedServiceProperties {
     /**
      * Set the username property: Username to access the SAP HANA server. Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @param username the username value to set.
      * @return the SapHanaLinkedServiceProperties object itself.
      */
@@ -139,7 +142,7 @@ public final class SapHanaLinkedServiceProperties {
 
     /**
      * Get the password property: Password to access the SAP HANA server.
-     *
+     * 
      * @return the password value.
      */
     public SecretBase password() {
@@ -148,7 +151,7 @@ public final class SapHanaLinkedServiceProperties {
 
     /**
      * Set the password property: Password to access the SAP HANA server.
-     *
+     * 
      * @param password the password value to set.
      * @return the SapHanaLinkedServiceProperties object itself.
      */
@@ -159,29 +162,29 @@ public final class SapHanaLinkedServiceProperties {
 
     /**
      * Get the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @return the encryptedCredential value.
      */
-    public Object encryptedCredential() {
+    public String encryptedCredential() {
         return this.encryptedCredential;
     }
 
     /**
      * Set the encryptedCredential property: The encrypted credential used for authentication. Credentials are encrypted
-     * using the integration runtime credential manager. Type: string (or Expression with resultType string).
-     *
+     * using the integration runtime credential manager. Type: string.
+     * 
      * @param encryptedCredential the encryptedCredential value to set.
      * @return the SapHanaLinkedServiceProperties object itself.
      */
-    public SapHanaLinkedServiceProperties withEncryptedCredential(Object encryptedCredential) {
+    public SapHanaLinkedServiceProperties withEncryptedCredential(String encryptedCredential) {
         this.encryptedCredential = encryptedCredential;
         return this;
     }
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {

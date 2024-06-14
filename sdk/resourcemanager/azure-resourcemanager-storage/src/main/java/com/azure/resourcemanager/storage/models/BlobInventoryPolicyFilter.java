@@ -6,6 +6,7 @@ package com.azure.resourcemanager.storage.models;
 
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 /**
@@ -28,35 +29,40 @@ public final class BlobInventoryPolicyFilter {
     private List<String> excludePrefix;
 
     /*
-     * An array of predefined enum values. Valid values include blockBlob, appendBlob, pageBlob. Hns accounts does not
-     * support pageBlobs. This field is required when definition.objectType property is set to 'Blob'.
+     * An array of predefined enum values. Valid values include blockBlob, appendBlob, pageBlob. Hns accounts does not support pageBlobs. This field is required when definition.objectType property is set to 'Blob'.
      */
     @JsonProperty(value = "blobTypes")
     private List<String> blobTypes;
 
     /*
-     * Includes blob versions in blob inventory when value is set to true. The definition.schemaFields values
-     * 'VersionId and IsCurrentVersion' are required if this property is set to true, else they must be excluded.
+     * Includes blob versions in blob inventory when value is set to true. The definition.schemaFields values 'VersionId and IsCurrentVersion' are required if this property is set to true, else they must be excluded.
      */
     @JsonProperty(value = "includeBlobVersions")
     private Boolean includeBlobVersions;
 
     /*
-     * Includes blob snapshots in blob inventory when value is set to true. The definition.schemaFields value
-     * 'Snapshot' is required if this property is set to true, else it must be excluded.
+     * Includes blob snapshots in blob inventory when value is set to true. The definition.schemaFields value 'Snapshot' is required if this property is set to true, else it must be excluded.
      */
     @JsonProperty(value = "includeSnapshots")
     private Boolean includeSnapshots;
 
     /*
-     * For 'Container' definition.objectType the definition.schemaFields must include 'Deleted, Version, DeletedTime
-     * and RemainingRetentionDays'. For 'Blob' definition.objectType and HNS enabled storage accounts the
-     * definition.schemaFields must include 'DeletionId, Deleted, DeletedTime and RemainingRetentionDays' and for Hns
-     * disabled accounts the definition.schemaFields must include 'Deleted and RemainingRetentionDays', else it must be
-     * excluded.
+     * For 'Container' definition.objectType the definition.schemaFields must include 'Deleted, Version, DeletedTime and RemainingRetentionDays'. For 'Blob' definition.objectType and HNS enabled storage accounts the definition.schemaFields must include 'DeletionId, Deleted, DeletedTime and RemainingRetentionDays' and for Hns disabled accounts the definition.schemaFields must include 'Deleted and RemainingRetentionDays', else it must be excluded.
      */
     @JsonProperty(value = "includeDeleted")
     private Boolean includeDeleted;
+
+    /*
+     * This property is used to filter objects based on the object creation time
+     */
+    @JsonProperty(value = "creationTime")
+    private BlobInventoryCreationTime creationTime;
+
+    /**
+     * Creates an instance of BlobInventoryPolicyFilter class.
+     */
+    public BlobInventoryPolicyFilter() {
+    }
 
     /**
      * Get the prefixMatch property: An array of strings with maximum 10 blob prefixes to be included in the inventory.
@@ -199,10 +205,33 @@ public final class BlobInventoryPolicyFilter {
     }
 
     /**
+     * Get the creationTime property: This property is used to filter objects based on the object creation time.
+     *
+     * @return the creationTime value.
+     */
+    public BlobInventoryCreationTime creationTime() {
+        return this.creationTime;
+    }
+
+    /**
+     * Set the creationTime property: This property is used to filter objects based on the object creation time.
+     *
+     * @param creationTime the creationTime value to set.
+     * @return the BlobInventoryPolicyFilter object itself.
+     */
+    public BlobInventoryPolicyFilter withCreationTime(BlobInventoryCreationTime creationTime) {
+        this.creationTime = creationTime;
+        return this;
+    }
+
+    /**
      * Validates the instance.
      *
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
+        if (creationTime() != null) {
+            creationTime().validate();
+        }
     }
 }

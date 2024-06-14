@@ -20,18 +20,22 @@ import com.azure.cosmos.CosmosDiagnosticsHandler;
 import com.azure.cosmos.CosmosDiagnosticsThresholds;
 import com.azure.cosmos.CosmosEndToEndOperationLatencyPolicyConfig;
 import com.azure.cosmos.CosmosException;
-import com.azure.cosmos.SessionRetryOptions;
+import com.azure.cosmos.CosmosRegionSwitchHint;
+import com.azure.cosmos.CosmosItemSerializer;
 import com.azure.cosmos.DirectConnectionConfig;
 import com.azure.cosmos.GlobalThroughputControlConfig;
+import com.azure.cosmos.SessionRetryOptions;
 import com.azure.cosmos.ThroughputControlGroupConfig;
+import com.azure.cosmos.implementation.apachecommons.lang.tuple.Pair;
+import com.azure.cosmos.implementation.batch.BulkExecutorDiagnosticsTracker;
 import com.azure.cosmos.implementation.batch.ItemBatchOperation;
 import com.azure.cosmos.implementation.batch.PartitionScopeThresholds;
 import com.azure.cosmos.implementation.clienttelemetry.ClientTelemetry;
 import com.azure.cosmos.implementation.clienttelemetry.CosmosMeterOptions;
 import com.azure.cosmos.implementation.clienttelemetry.MetricCategory;
 import com.azure.cosmos.implementation.clienttelemetry.TagName;
-import com.azure.cosmos.implementation.directconnectivity.Uri;
 import com.azure.cosmos.implementation.directconnectivity.ContainerDirectConnectionMetadata;
+import com.azure.cosmos.implementation.directconnectivity.Uri;
 import com.azure.cosmos.implementation.directconnectivity.rntbd.RntbdChannelStatistics;
 import com.azure.cosmos.implementation.faultinjection.IFaultInjectorProvider;
 import com.azure.cosmos.implementation.patch.PatchOperation;
@@ -49,16 +53,22 @@ import com.azure.cosmos.models.CosmosClientEncryptionKeyResponse;
 import com.azure.cosmos.models.CosmosClientTelemetryConfig;
 import com.azure.cosmos.models.CosmosContainerIdentity;
 import com.azure.cosmos.models.CosmosContainerProperties;
+import com.azure.cosmos.models.CosmosItemIdentity;
 import com.azure.cosmos.models.CosmosItemRequestOptions;
 import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosMetricName;
+import com.azure.cosmos.models.CosmosPatchItemRequestOptions;
 import com.azure.cosmos.models.CosmosPatchOperations;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
-import com.azure.cosmos.CosmosRegionSwitchHint;
+import com.azure.cosmos.models.CosmosReadManyRequestOptions;
+import com.azure.cosmos.models.FeedRange;
 import com.azure.cosmos.models.FeedResponse;
 import com.azure.cosmos.models.ModelBridgeInternal;
 import com.azure.cosmos.models.PartitionKey;
+import com.azure.cosmos.models.PartitionKeyDefinition;
 import com.azure.cosmos.models.PriorityLevel;
+import com.azure.cosmos.models.ShowQueryMode;
+import com.azure.cosmos.models.SqlQuerySpec;
 import com.azure.cosmos.util.CosmosPagedFlux;
 import com.azure.cosmos.util.UtilBridgeInternal;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -75,7 +85,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -115,7 +125,6 @@ public class ImplementationBridgeHelpers {
             CosmosClientBuilderAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosClientBuilderAccessor is not initialized yet!");
-                System.exit(9700); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -140,6 +149,12 @@ public class ImplementationBridgeHelpers {
             ConsistencyLevel getConsistencyLevel(CosmosClientBuilder builder);
 
             String getEndpoint(CosmosClientBuilder builder);
+
+            CosmosItemSerializer getDefaultCustomSerializer(CosmosClientBuilder builder);
+
+            void setRegionScopedSessionCapturingEnabled(CosmosClientBuilder builder, boolean isRegionScopedSessionCapturingEnabled);
+
+            boolean getRegionScopedSessionCapturingEnabled(CosmosClientBuilder builder);
         }
     }
 
@@ -167,7 +182,6 @@ public class ImplementationBridgeHelpers {
             PartitionKeyAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("PartitionKeyAccessor is not initialized yet!");
-                System.exit(9701); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -175,6 +189,8 @@ public class ImplementationBridgeHelpers {
 
         public interface PartitionKeyAccessor {
             PartitionKey toPartitionKey(PartitionKeyInternal partitionKeyInternal);
+            PartitionKey toPartitionKey(List<Object> values, boolean strict);
+            PartitionKeyInternal getPartitionKeyInternal(PartitionKey partitionKey);
         }
     }
 
@@ -202,7 +218,6 @@ public class ImplementationBridgeHelpers {
             DirectConnectionConfigAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("DirectConnectionConfigAccessor is not initialized yet!");
-                System.exit(9702); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -248,36 +263,71 @@ public class ImplementationBridgeHelpers {
             CosmosQueryRequestOptionsAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosQueryRequestOptionsAccessor is not initialized yet!");
-                System.exit(9703); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
         }
 
         public interface CosmosQueryRequestOptionsAccessor {
-            void setOperationContext(CosmosQueryRequestOptions queryRequestOptions, OperationContextAndListenerTuple operationContext);
-            OperationContextAndListenerTuple getOperationContext(CosmosQueryRequestOptions queryRequestOptions);
-            CosmosQueryRequestOptions setHeader(CosmosQueryRequestOptions queryRequestOptions, String name, String value);
-            Map<String, String> getHeader(CosmosQueryRequestOptions queryRequestOptions);
+            CosmosQueryRequestOptionsBase<?> getImpl(CosmosQueryRequestOptions options);
+            CosmosQueryRequestOptions clone(CosmosQueryRequestOptions toBeCloned);
+            CosmosQueryRequestOptions clone(CosmosQueryRequestOptionsBase<?> toBeCloned);
             boolean isQueryPlanRetrievalDisallowed(CosmosQueryRequestOptions queryRequestOptions);
             CosmosQueryRequestOptions disallowQueryPlanRetrieval(CosmosQueryRequestOptions queryRequestOptions);
-            UUID getCorrelationActivityId(CosmosQueryRequestOptions queryRequestOptions);
-            CosmosQueryRequestOptions setCorrelationActivityId(CosmosQueryRequestOptions queryRequestOptions, UUID correlationActivityId);
             boolean isEmptyPageDiagnosticsEnabled(CosmosQueryRequestOptions queryRequestOptions);
-            CosmosQueryRequestOptions setEmptyPageDiagnosticsEnabled(CosmosQueryRequestOptions queryRequestOptions, boolean emptyPageDiagnosticsEnabled);
-            CosmosQueryRequestOptions withEmptyPageDiagnosticsEnabled(CosmosQueryRequestOptions queryRequestOptions, boolean emptyPageDiagnosticsEnabled);
-            <T> Function<JsonNode, T> getItemFactoryMethod(CosmosQueryRequestOptions queryRequestOptions, Class<T> classOfT);
-            CosmosQueryRequestOptions setItemFactoryMethod(CosmosQueryRequestOptions queryRequestOptions, Function<JsonNode, ?> factoryMethod);
             String getQueryNameOrDefault(CosmosQueryRequestOptions queryRequestOptions, String defaultQueryName);
             RequestOptions toRequestOptions(CosmosQueryRequestOptions queryRequestOptions);
-            CosmosDiagnosticsThresholds getDiagnosticsThresholds(CosmosQueryRequestOptions options);
-            void applyMaxItemCount(CosmosQueryRequestOptions requestOptions, CosmosPagedFluxOptions fluxOptions);
-            CosmosEndToEndOperationLatencyPolicyConfig getEndToEndOperationLatencyPolicyConfig(CosmosQueryRequestOptions options);
-            List<String> getExcludeRegions(CosmosQueryRequestOptions options);
             List<CosmosDiagnostics> getCancelledRequestDiagnosticsTracker(CosmosQueryRequestOptions options);
             void setCancelledRequestDiagnosticsTracker(
                 CosmosQueryRequestOptions options,
                 List<CosmosDiagnostics> cancelledRequestDiagnosticsTracker);
+            void setAllowEmptyPages(CosmosQueryRequestOptions options, boolean emptyPagesAllowed);
+
+            boolean getAllowEmptyPages(CosmosQueryRequestOptions options);
+
+            Integer getMaxItemCount(CosmosQueryRequestOptions options);
+
+            String getRequestContinuation(CosmosQueryRequestOptions options);
+
+            Integer getMaxItemCountForVectorSearch(CosmosQueryRequestOptions options);
+
+            void setPartitionKeyDefinition(CosmosQueryRequestOptions options, PartitionKeyDefinition partitionKeyDefinition);
+
+            PartitionKeyDefinition getPartitionKeyDefinition(CosmosQueryRequestOptions options);
+        }
+    }
+
+    public static final class CosmosReadManyRequestOptionsHelper {
+        private final static AtomicBoolean cosmosReadManyRequestOptionsClassLoaded = new AtomicBoolean(false);
+        private final static AtomicReference<CosmosReadManyRequestOptionsAccessor> accessor = new AtomicReference<>();
+
+        private CosmosReadManyRequestOptionsHelper() {}
+
+        public static void setCosmosReadManyRequestOptionsAccessor(final CosmosReadManyRequestOptionsAccessor newAccessor) {
+            if (!accessor.compareAndSet(null, newAccessor)) {
+                logger.debug("CosmosReadManyRequestOptionsAccessor already initialized!");
+            } else {
+                logger.debug("Setting CosmosReadManyRequestOptionsAccessor...");
+                cosmosReadManyRequestOptionsClassLoaded.set(true);
+            }
+        }
+
+        public static CosmosReadManyRequestOptionsAccessor getCosmosReadManyRequestOptionsAccessor() {
+            if (!cosmosReadManyRequestOptionsClassLoaded.get()) {
+                logger.debug("Initializing CosmosReadManyRequestOptionsAccessor...");
+                initializeAllAccessors();
+            }
+
+            CosmosReadManyRequestOptionsAccessor snapshot = accessor.get();
+            if (snapshot == null) {
+                logger.error("CosmosReadManyRequestOptionsAccessor is not initialized yet!");
+            }
+
+            return snapshot;
+        }
+
+        public interface CosmosReadManyRequestOptionsAccessor {
+            public CosmosQueryRequestOptionsBase<?> getImpl(CosmosReadManyRequestOptions options);
         }
     }
 
@@ -305,7 +355,6 @@ public class ImplementationBridgeHelpers {
             CosmosChangeFeedRequestOptionsAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosChangeFeedRequestOptionsAccessor is not initialized yet!");
-                System.exit(9704); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -316,12 +365,11 @@ public class ImplementationBridgeHelpers {
             Map<String, String> getHeader(CosmosChangeFeedRequestOptions changeFeedRequestOptions);
             void setOperationContext(CosmosChangeFeedRequestOptions changeFeedRequestOptions, OperationContextAndListenerTuple operationContext);
             OperationContextAndListenerTuple getOperationContext(CosmosChangeFeedRequestOptions changeFeedRequestOptions);
-            <T> Function<JsonNode, T> getItemFactoryMethod(CosmosChangeFeedRequestOptions queryRequestOptions, Class<T> classOfT);
-            CosmosChangeFeedRequestOptions setItemFactoryMethod(CosmosChangeFeedRequestOptions queryRequestOptions, Function<JsonNode, ?> factoryMethod);
             CosmosDiagnosticsThresholds getDiagnosticsThresholds(CosmosChangeFeedRequestOptions options);
-            void applyMaxItemCount(CosmosChangeFeedRequestOptions requestOptions, CosmosPagedFluxOptions fluxOptions);
             List<String> getExcludeRegions(CosmosChangeFeedRequestOptions cosmosChangeFeedRequestOptions);
+            CosmosChangeFeedRequestOptions createForProcessingFromContinuation(String continuation, FeedRange targetRange, String continuationLsn);
 
+            CosmosChangeFeedRequestOptions clone(CosmosChangeFeedRequestOptions toBeCloned);
         }
     }
 
@@ -349,13 +397,13 @@ public class ImplementationBridgeHelpers {
             CosmosItemRequestOptionsAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosItemRequestOptionsAccessor is not initialized yet!");
-                System.exit(9705); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
         }
 
         public interface CosmosItemRequestOptionsAccessor {
+            RequestOptions toRequestOptions(CosmosItemRequestOptions itemRequestOptions, CosmosItemSerializer effectiveItemSerializer);
             void setOperationContext(CosmosItemRequestOptions queryRequestOptions, OperationContextAndListenerTuple operationContext);
             OperationContextAndListenerTuple getOperationContext(CosmosItemRequestOptions queryRequestOptions);
             CosmosItemRequestOptions clone(CosmosItemRequestOptions options);
@@ -370,6 +418,11 @@ public class ImplementationBridgeHelpers {
                 CosmosItemRequestOptions cosmosItemRequestOptions,
                 WriteRetryPolicy clientDefault,
                 boolean operationDefault);
+
+            CosmosEndToEndOperationLatencyPolicyConfig getEndToEndOperationLatencyPolicyConfig(
+                CosmosItemRequestOptions options);
+
+            CosmosPatchItemRequestOptions clonePatchItemRequestOptions(CosmosPatchItemRequestOptions options);
         }
     }
 
@@ -397,7 +450,6 @@ public class ImplementationBridgeHelpers {
             CosmosBulkExecutionOptionsAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosBulkExecutionOptionsAccessor is not initialized yet!");
-                System.exit(9706); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -421,10 +473,6 @@ public class ImplementationBridgeHelpers {
                 double minRetryRate,
                 double maxRetryRate);
 
-            int getMaxMicroBatchSize(CosmosBulkExecutionOptions options);
-
-            CosmosBulkExecutionOptions setMaxMicroBatchSize(CosmosBulkExecutionOptions options, int maxMicroBatchSize);
-
             int getMaxMicroBatchPayloadSizeInBytes(CosmosBulkExecutionOptions options);
 
             CosmosBulkExecutionOptions setMaxMicroBatchPayloadSizeInBytes(CosmosBulkExecutionOptions options, int maxMicroBatchPayloadSizeInBytes);
@@ -445,6 +493,11 @@ public class ImplementationBridgeHelpers {
 
             Map<String, String> getCustomOptions(CosmosBulkExecutionOptions cosmosBulkExecutionOptions);
             List<String> getExcludeRegions(CosmosBulkExecutionOptions cosmosBulkExecutionOptions);
+            int getMaxMicroBatchSize(CosmosBulkExecutionOptions cosmosBulkExecutionOptions);
+            void setDiagnosticsTracker(CosmosBulkExecutionOptions cosmosBulkExecutionOptions, BulkExecutorDiagnosticsTracker tracker);
+            BulkExecutorDiagnosticsTracker getDiagnosticsTracker(CosmosBulkExecutionOptions cosmosBulkExecutionOptions);
+
+            CosmosBulkExecutionOptions clone(CosmosBulkExecutionOptions toBeCloned);
         }
     }
 
@@ -474,16 +527,19 @@ public class ImplementationBridgeHelpers {
             CosmosItemResponseBuilderAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosItemResponseBuilderAccessor is not initialized yet!");
-                System.exit(9707); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
         }
 
         public interface CosmosItemResponseBuilderAccessor {
+            <T> CosmosItemResponse<T> createCosmosItemResponse(CosmosItemResponse<byte[]> response,
+                                                               Class<T> classType,
+                                                               CosmosItemSerializer serializer);
+
             <T> CosmosItemResponse<T> createCosmosItemResponse(ResourceResponse<Document> response,
-                                                               byte[] contentAsByteArray, Class<T> classType,
-                                                               ItemDeserializer itemDeserializer);
+                                                               Class<T> classType,
+                                                               CosmosItemSerializer serializer);
 
 
             <T> CosmosItemResponse<T> withRemappedStatusCode(
@@ -494,7 +550,7 @@ public class ImplementationBridgeHelpers {
 
             byte[] getByteArrayContent(CosmosItemResponse<byte[]> response);
 
-            void setByteArrayContent(CosmosItemResponse<byte[]> response, byte[] content);
+            void setByteArrayContent(CosmosItemResponse<byte[]> response, Pair<byte[], JsonNode> content);
 
             ResourceResponse<Document> getResourceResponse(CosmosItemResponse<byte[]> response);
 
@@ -527,7 +583,6 @@ public class ImplementationBridgeHelpers {
             CosmosClientAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosClientAccessor is not initialized yet!");
-                System.exit(9708); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -563,13 +618,13 @@ public class ImplementationBridgeHelpers {
             CosmosContainerPropertiesAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosContainerPropertiesAccessor is not initialized yet!");
-                System.exit(9709); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
         }
 
         public interface CosmosContainerPropertiesAccessor {
+            CosmosContainerProperties create(DocumentCollection documentCollection);
             String getSelfLink(CosmosContainerProperties cosmosContainerProperties);
             void setSelfLink(CosmosContainerProperties cosmosContainerProperties, String selfLink);
         }
@@ -600,7 +655,6 @@ public class ImplementationBridgeHelpers {
             CosmosPageFluxAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosPageFluxAccessor is not initialized yet!");
-                System.exit(9710); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -636,7 +690,6 @@ public class ImplementationBridgeHelpers {
             CosmosAsyncDatabaseAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosAsyncDatabaseAccessor is not initialized yet!");
-                System.exit(9711); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -673,7 +726,6 @@ public class ImplementationBridgeHelpers {
             CosmosBulkExecutionThresholdsStateAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosBulkExecutionThresholdsStateAccessor is not initialized yet!");
-                System.exit(9712); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -712,7 +764,6 @@ public class ImplementationBridgeHelpers {
             CosmosDiagnosticsAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosDiagnosticsAccessor is not initialized yet!");
-                System.exit(9713); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -734,6 +785,15 @@ public class ImplementationBridgeHelpers {
             void setSamplingRateSnapshot(CosmosDiagnostics cosmosDiagnostics, double samplingRate);
 
             CosmosDiagnostics create(DiagnosticsClientContext clientContext, double samplingRate);
+            void recordAddressResolutionEnd(
+                RxDocumentServiceRequest request,
+                String identifier,
+                String errorMessage,
+                long transportRequestId);
+
+            boolean isNotEmpty(CosmosDiagnostics cosmosDiagnostics);
+
+            void setDiagnosticsContext(CosmosDiagnostics cosmosDiagnostics, CosmosDiagnosticsContext ctx);
         }
     }
 
@@ -762,7 +822,6 @@ public class ImplementationBridgeHelpers {
             CosmosDiagnosticsContextAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosDiagnosticsAccessor is not initialized yet!");
-                System.exit(9713); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -783,7 +842,9 @@ public class ImplementationBridgeHelpers {
                 CosmosDiagnosticsThresholds thresholds,
                 String trackingId,
                 String connectionMode,
-                String userAgent);
+                String userAgent,
+                Integer sequenceNumber,
+                String queryStatement);
 
             CosmosDiagnosticsSystemUsageSnapshot createSystemUsageSnapshot(
                 String cpu,
@@ -831,7 +892,14 @@ public class ImplementationBridgeHelpers {
 
             String getSpanName(CosmosDiagnosticsContext ctx);
 
-            void setSamplingRateSnapshot(CosmosDiagnosticsContext ctx, double samplingRate);
+            void setSamplingRateSnapshot(CosmosDiagnosticsContext ctx, double samplingRate, boolean isSampledOut);
+
+            Integer getSequenceNumber(CosmosDiagnosticsContext ctx);
+
+            boolean isEmptyCompletion(CosmosDiagnosticsContext ctx);
+
+            String getQueryStatement(CosmosDiagnosticsContext ctx);
+
         }
     }
 
@@ -860,7 +928,6 @@ public class ImplementationBridgeHelpers {
             CosmosAsyncContainerAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosAsyncContainerAccessor is not initialized yet!");
-                System.exit(9714); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -886,6 +953,36 @@ public class ImplementationBridgeHelpers {
             IFaultInjectorProvider getOrConfigureFaultInjectorProvider(
                 CosmosAsyncContainer cosmosAsyncContainer,
                 Callable<IFaultInjectorProvider> injectorProviderCallable);
+
+            <T> Mono<FeedResponse<T>> readMany(
+                CosmosAsyncContainer cosmosAsyncContainer,
+                List<CosmosItemIdentity> itemIdentityList,
+                CosmosReadManyRequestOptions requestOptions,
+                Class<T> classType);
+
+            <T> Function<CosmosPagedFluxOptions, Flux<FeedResponse<T>>> queryItemsInternalFunc(
+                CosmosAsyncContainer cosmosAsyncContainer,
+                SqlQuerySpec sqlQuerySpec,
+                CosmosQueryRequestOptions cosmosQueryRequestOptions,
+                Class<T> classType);
+
+            <T> Function<CosmosPagedFluxOptions, Flux<FeedResponse<T>>> queryItemsInternalFuncWithMonoSqlQuerySpec(
+                CosmosAsyncContainer cosmosAsyncContainer,
+                Mono<SqlQuerySpec> sqlQuerySpecMono,
+                CosmosQueryRequestOptions cosmosQueryRequestOptions,
+                Class<T> classType);
+
+            Mono<List<FeedRange>> getFeedRanges(CosmosAsyncContainer cosmosAsyncContainer, boolean forceRefresh);
+
+            Mono<List<FeedRange>> trySplitFeedRange(
+                CosmosAsyncContainer cosmosAsyncContainer,
+                FeedRange feedRange,
+                int targetedCountAfterSplit);
+
+            String getLinkWithoutTrailingSlash(CosmosAsyncContainer cosmosAsyncContainer);
+            Mono<Boolean> checkFeedRangeOverlapping(CosmosAsyncContainer container, FeedRange feedRange1, FeedRange feedRange2);
+            Mono<List<FeedRange>> getOverlappingFeedRanges(CosmosAsyncContainer container, FeedRange feedRange, boolean forceRefresh);
+            Mono<PartitionKeyDefinition> getPartitionKeyDefinition(CosmosAsyncContainer container);
         }
     }
 
@@ -914,13 +1011,19 @@ public class ImplementationBridgeHelpers {
             FeedResponseAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("FeedResponseAccessor is not initialized yet!");
-                System.exit(9715); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
         }
 
         public interface FeedResponseAccessor {
+            <T> FeedResponse<T> createFeedResponse(RxDocumentServiceResponse response,
+                                                   CosmosItemSerializer itemSerializer,
+                                                   Class<T> cls);
+
+            <T> FeedResponse<T> createChangeFeedResponse(RxDocumentServiceResponse response,
+                                                   CosmosItemSerializer itemSerializer,
+                                                   Class<T> cls);
             <T> boolean getNoChanges(FeedResponse<T> feedResponse);
             <TNew, T> FeedResponse<TNew> convertGenericType(FeedResponse<T> feedResponse, Function<T, TNew> conversion);
             <T> FeedResponse<T> createFeedResponse(
@@ -944,7 +1047,6 @@ public class ImplementationBridgeHelpers {
             CosmosBatchRequestOptionsAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosBatchRequestOptionsAccessor is not initialized yet!");
-                System.exit(9716); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -966,6 +1068,8 @@ public class ImplementationBridgeHelpers {
             CosmosBatchRequestOptions setHeader(CosmosBatchRequestOptions cosmosItemRequestOptions, String name, String value);
             Map<String, String> getHeader(CosmosBatchRequestOptions cosmosItemRequestOptions);
             List<String> getExcludeRegions(CosmosBatchRequestOptions cosmosBatchRequestOptions);
+
+            CosmosBatchRequestOptions clone(CosmosBatchRequestOptions toBeCloned);
         }
     }
 
@@ -985,7 +1089,6 @@ public class ImplementationBridgeHelpers {
             CosmosBatchOperationResultAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosBatchOperationResultAccessor is not initialized yet!");
-                System.exit(9717); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1003,6 +1106,8 @@ public class ImplementationBridgeHelpers {
         public interface CosmosBatchOperationResultAccessor {
             ObjectNode getResourceObject(CosmosBatchOperationResult cosmosBatchOperationResult);
             void setResourceObject(CosmosBatchOperationResult cosmosBatchOperationResult, ObjectNode objectNode);
+            void setEffectiveItemSerializer(CosmosBatchOperationResult cosmosBatchOperationResult,
+                                            CosmosItemSerializer effectiveItemSerializer);
         }
     }
 
@@ -1022,7 +1127,6 @@ public class ImplementationBridgeHelpers {
             CosmosPatchOperationsAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosPatchOperationsAccessor is not initialized yet!");
-                System.exit(9718); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1058,7 +1162,6 @@ public class ImplementationBridgeHelpers {
             CosmosBatchAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosBatchAccessor is not initialized yet!");
-                System.exit(9719); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1094,7 +1197,6 @@ public class ImplementationBridgeHelpers {
             CosmosBulkItemResponseAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosBulkItemResponseAccessor is not initialized yet!");
-                System.exit(9720); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1114,6 +1216,9 @@ public class ImplementationBridgeHelpers {
 
             void setResourceObject(CosmosBulkItemResponse cosmosBulkItemResponse,
                                    ObjectNode objectNode);
+
+            void setEffectiveItemSerializer(CosmosBulkItemResponse cosmosBulkItemResponse,
+                                            CosmosItemSerializer effectiveItemSerializer);
         }
     }
 
@@ -1133,7 +1238,6 @@ public class ImplementationBridgeHelpers {
             CosmosBatchResponseAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosBatchResponseAccessor is not initialized yet!");
-                System.exit(9721); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1169,7 +1273,6 @@ public class ImplementationBridgeHelpers {
             CosmosAsyncClientEncryptionKeyAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosAsyncClientEncryptionKeyAccessor is not initialized yet!");
-                System.exit(9722); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1214,7 +1317,6 @@ public class ImplementationBridgeHelpers {
             CosmosAsyncClientAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosAsyncClientAccessor is not initialized yet!");
-                System.exit(9723); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1246,6 +1348,10 @@ public class ImplementationBridgeHelpers {
                 CosmosDiagnosticsThresholds operationLevelThresholds);
 
             DiagnosticsProvider getDiagnosticsProvider(CosmosAsyncClient client);
+
+            CosmosItemSerializer getEffectiveItemSerializer(
+                CosmosAsyncClient client,
+                CosmosItemSerializer requestOptionsItemSerializer);
         }
     }
 
@@ -1273,7 +1379,6 @@ public class ImplementationBridgeHelpers {
             CosmosDiagnosticsThresholdsAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosDiagnosticsThresholdsAccessor is not initialized yet!");
-                System.exit(9727); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1304,7 +1409,6 @@ public class ImplementationBridgeHelpers {
             CosmosExceptionAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosExceptionAccessor is not initialized yet!");
-                System.exit(9800); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1321,7 +1425,7 @@ public class ImplementationBridgeHelpers {
 
         public interface CosmosExceptionAccessor {
             CosmosException createCosmosException(int statusCode, Exception innerException);
-            List<String> getReplicaStatusList(CosmosException cosmosException);
+            Map<String, Set<String>> getReplicaStatusList(CosmosException cosmosException);
             CosmosException setRntbdChannelStatistics(CosmosException cosmosException, RntbdChannelStatistics rntbdChannelStatistics);
             RntbdChannelStatistics getRntbdChannelStatistics(CosmosException cosmosException);
 
@@ -1351,7 +1455,6 @@ public class ImplementationBridgeHelpers {
             CosmosClientTelemetryConfigAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("CosmosClientTelemetryConfigAccessor is not initialized yet!");
-                System.exit(9724); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1402,6 +1505,10 @@ public class ImplementationBridgeHelpers {
             void setUseLegacyTracing(CosmosClientTelemetryConfig config, boolean useLegacyTracing);
             void setTracer(CosmosClientTelemetryConfig config, Tracer tracer);
             double getSamplingRate(CosmosClientTelemetryConfig config);
+            ShowQueryMode showQueryMode(CosmosClientTelemetryConfig config);
+            double[] getDefaultPercentiles(CosmosClientTelemetryConfig config);
+            boolean shouldPublishHistograms(CosmosClientTelemetryConfig config);
+            boolean shouldApplyDiagnosticThresholdsForTransportLevelMeters(CosmosClientTelemetryConfig config);
         }
     }
 
@@ -1421,7 +1528,6 @@ public class ImplementationBridgeHelpers {
             PriorityLevelAccessor snapshot = accessor.get();
             if (snapshot == null) {
                 logger.error("PriorityLevelAccessor is not initialized yet!");
-                System.exit(9728); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1446,7 +1552,7 @@ public class ImplementationBridgeHelpers {
 
     public static final class CosmosContainerIdentityHelper {
 
-        private static final AtomicReference<Boolean> cosmosContainerIdentityClassLoaded = new AtomicReference<>(false);
+        private static final AtomicBoolean cosmosContainerIdentityClassLoaded = new AtomicBoolean(false);
         private static final AtomicReference<CosmosContainerIdentityAccessor> accessor = new AtomicReference<>();
 
         private CosmosContainerIdentityHelper() {}
@@ -1462,7 +1568,6 @@ public class ImplementationBridgeHelpers {
 
             if (snapshot == null) {
                 logger.error("CosmosContainerIdentityAccessor is not initialized yet!");
-                System.exit(9725); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1489,7 +1594,7 @@ public class ImplementationBridgeHelpers {
 
     public static final class CosmosContainerProactiveInitConfigHelper {
 
-        private static final AtomicReference<Boolean> cosmosContainerProactiveInitConfigClassLoaded = new AtomicReference<>(false);
+        private static final AtomicBoolean cosmosContainerProactiveInitConfigClassLoaded = new AtomicBoolean(false);
         private static final AtomicReference<CosmosContainerProactiveInitConfigAccessor> accessor = new AtomicReference<>();
 
         private CosmosContainerProactiveInitConfigHelper() {}
@@ -1505,7 +1610,6 @@ public class ImplementationBridgeHelpers {
 
             if (snapshot == null) {
                 logger.error("CosmosContainerProactiveInitConfigAccessor is not initialized yet!");
-                System.exit(9726); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1529,7 +1633,7 @@ public class ImplementationBridgeHelpers {
     }
 
     public static final class CosmosSessionRetryOptionsHelper {
-        private static final AtomicReference<Boolean> cosmosSessionRetryOptionsClassLoaded = new AtomicReference<>(false);
+        private static final AtomicBoolean cosmosSessionRetryOptionsClassLoaded = new AtomicBoolean(false);
         private static final AtomicReference<CosmosSessionRetryOptionsAccessor> accessor = new AtomicReference<>();
 
         private CosmosSessionRetryOptionsHelper() {}
@@ -1545,7 +1649,6 @@ public class ImplementationBridgeHelpers {
 
             if (snapshot == null) {
                 logger.error("cosmosSessionRetryOptionsAccessor is not initialized yet!");
-                System.exit(9727); // Using a unique status code here to help debug the issue.
             }
 
             return snapshot;
@@ -1565,6 +1668,9 @@ public class ImplementationBridgeHelpers {
 
         public interface CosmosSessionRetryOptionsAccessor {
             CosmosRegionSwitchHint getRegionSwitchHint(SessionRetryOptions sessionRetryOptions);
+            Duration getMinInRegionRetryTime(SessionRetryOptions sessionRetryOptions);
+
+            int getMaxInRegionRetryCount(SessionRetryOptions sessionRetryOptions);
         }
     }
 }

@@ -8,40 +8,59 @@ import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Format write settings. */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = "type",
-    defaultImpl = FormatWriteSettings.class)
+/**
+ * Format write settings.
+ */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = FormatWriteSettings.class, visible = true)
 @JsonTypeName("FormatWriteSettings")
 @JsonSubTypes({
     @JsonSubTypes.Type(name = "AvroWriteSettings", value = AvroWriteSettings.class),
     @JsonSubTypes.Type(name = "OrcWriteSettings", value = OrcWriteSettings.class),
     @JsonSubTypes.Type(name = "ParquetWriteSettings", value = ParquetWriteSettings.class),
     @JsonSubTypes.Type(name = "DelimitedTextWriteSettings", value = DelimitedTextWriteSettings.class),
-    @JsonSubTypes.Type(name = "JsonWriteSettings", value = JsonWriteSettings.class)
-})
+    @JsonSubTypes.Type(name = "JsonWriteSettings", value = JsonWriteSettings.class) })
 @Fluent
 public class FormatWriteSettings {
     /*
+     * The write setting type.
+     */
+    @JsonTypeId
+    @JsonProperty(value = "type", required = true)
+    private String type;
+
+    /*
      * Format write settings.
      */
-    @JsonIgnore private Map<String, Object> additionalProperties;
+    @JsonIgnore
+    private Map<String, Object> additionalProperties;
 
-    /** Creates an instance of FormatWriteSettings class. */
+    /**
+     * Creates an instance of FormatWriteSettings class.
+     */
     public FormatWriteSettings() {
+        this.type = "FormatWriteSettings";
+    }
+
+    /**
+     * Get the type property: The write setting type.
+     * 
+     * @return the type value.
+     */
+    public String type() {
+        return this.type;
     }
 
     /**
      * Get the additionalProperties property: Format write settings.
-     *
+     * 
      * @return the additionalProperties value.
      */
     @JsonAnyGetter
@@ -51,7 +70,7 @@ public class FormatWriteSettings {
 
     /**
      * Set the additionalProperties property: Format write settings.
-     *
+     * 
      * @param additionalProperties the additionalProperties value to set.
      * @return the FormatWriteSettings object itself.
      */
@@ -70,7 +89,7 @@ public class FormatWriteSettings {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {

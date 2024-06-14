@@ -1,18 +1,38 @@
-FROM mcr.microsoft.com/openjdk/jdk:11-mariner as builder
-WORKDIR application
-ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} application.jar
-RUN java -Djarmode=layertools -jar application.jar extract
+ARG REGISTRY="azsdkengsys.azurecr.io"
+FROM ${REGISTRY}/java/jdk-mariner-mvn:jdk11-latest as builder
 
-FROM mcr.microsoft.com/openjdk/jdk:11-mariner
-WORKDIR application
-COPY --from=builder application/dependencies/ ./
-COPY --from=builder application/spring-boot-loader/ ./
-COPY --from=builder application/snapshot-dependencies/ ./
-COPY --from=builder application/application/ ./
-ARG AGENT_URL=https://github.com/microsoft/ApplicationInsights-Java/releases/download/3.4.1/applicationinsights-agent-3.4.1.jar
-ADD ${AGENT_URL} ./BOOT-INF/classes/
-ENTRYPOINT ["java","org.springframework.boot.loader.JarLauncher", \
-            "-javaagent:BOOT-INF/classes/applicationinsights-agent-3.4.1.jar", \
-            "--TEST_CLASS=MessageSender"]
+RUN yum update -y
+RUN mkdir /stress-sb
+WORKDIR /stress-sb
 
+ADD ./.vscode /stress-sb/.vscode
+ADD ./sdk/tools /stress-sb/sdk/tools
+ADD ./sdk/parents /stress-sb/sdk/parents
+ADD ./sdk/core /stress-sb/sdk/core
+ADD ./sdk/serialization /stress-sb/sdk/serialization
+ADD ./sdk/servicebus /stress-sb/sdk/servicebus
+ADD ./eng /stress-sb/eng
+
+ARG SKIP_CHECKS="-Dcheckstyle.skip -Dgpg.skip -Dmaven.javadoc.skip -Drevapi.skip -Dspotbugs.skip -Djacoco.skip -DskipTests -Dcodesnippet.skip -Dspotless.skip -Denforcer.skip"
+
+RUN --mount=type=cache,target=/root/.m2 \
+ mvn -f /stress-sb/eng/code-quality-reports/pom.xml clean install ${SKIP_CHECKS} && \
+ mvn -f /stress-sb/sdk/tools/pom.xml clean install  ${SKIP_CHECKS} && \
+ mvn -f /stress-sb/sdk/core/azure-core/pom.xml clean install ${SKIP_CHECKS} && \
+ mvn -f /stress-sb/sdk/serialization/azure-xml/pom.xml clean install ${SKIP_CHECKS} && \
+ mvn -f /stress-sb/sdk/core/azure-core-test/pom.xml clean install ${SKIP_CHECKS} && \
+ mvn -f /stress-sb/sdk/core/azure-core-amqp/pom.xml clean install ${SKIP_CHECKS} && \
+ mvn -f /stress-sb/sdk/core/azure-core-http-netty/pom.xml clean install ${SKIP_CHECKS} && \
+ mvn -f /stress-sb/sdk/core/azure-core-metrics-opentelemetry/pom.xml clean install ${SKIP_CHECKS} && \
+ mvn -f /stress-sb/sdk/servicebus/azure-messaging-servicebus/pom.xml clean install ${SKIP_CHECKS} && \
+ mvn -f /stress-sb/sdk/servicebus/azure-messaging-servicebus-stress/pom.xml clean install ${SKIP_CHECKS}
+
+FROM mcr.microsoft.com/openjdk/jdk:21-mariner
+
+RUN yum update -y
+
+WORKDIR /app
+COPY --from=builder /stress-sb/sdk/servicebus/azure-messaging-servicebus-stress/target .
+
+# This is never executed (since job yaml overrides it)
+ENTRYPOINT ["bash"]

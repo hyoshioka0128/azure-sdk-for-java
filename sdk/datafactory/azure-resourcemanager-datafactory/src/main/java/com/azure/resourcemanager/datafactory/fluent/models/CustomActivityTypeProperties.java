@@ -12,7 +12,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
-/** Custom activity properties. */
+/**
+ * Custom activity properties.
+ */
 @Fluent
 public final class CustomActivityTypeProperties {
     /*
@@ -40,34 +42,33 @@ public final class CustomActivityTypeProperties {
     private CustomActivityReferenceObject referenceObjects;
 
     /*
-     * User defined property bag. There is no restriction on the keys or values that can be used. The user specified
-     * custom activity has the full responsibility to consume and interpret the content defined.
+     * User defined property bag. There is no restriction on the keys or values that can be used. The user specified custom activity has the full responsibility to consume and interpret the content defined.
      */
     @JsonProperty(value = "extendedProperties")
     @JsonInclude(value = JsonInclude.Include.NON_NULL, content = JsonInclude.Include.ALWAYS)
     private Map<String, Object> extendedProperties;
 
     /*
-     * The retention time for the files submitted for custom activity. Type: double (or Expression with resultType
-     * double).
+     * The retention time for the files submitted for custom activity. Type: double (or Expression with resultType double).
      */
     @JsonProperty(value = "retentionTimeInDays")
     private Object retentionTimeInDays;
 
     /*
-     * Elevation level and scope for the user, default is nonadmin task. Type: string (or Expression with resultType
-     * double).
+     * Elevation level and scope for the user, default is nonadmin task. Type: string (or Expression with resultType double).
      */
     @JsonProperty(value = "autoUserSpecification")
     private Object autoUserSpecification;
 
-    /** Creates an instance of CustomActivityTypeProperties class. */
+    /**
+     * Creates an instance of CustomActivityTypeProperties class.
+     */
     public CustomActivityTypeProperties() {
     }
 
     /**
      * Get the command property: Command for custom activity Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the command value.
      */
     public Object command() {
@@ -76,7 +77,7 @@ public final class CustomActivityTypeProperties {
 
     /**
      * Set the command property: Command for custom activity Type: string (or Expression with resultType string).
-     *
+     * 
      * @param command the command value to set.
      * @return the CustomActivityTypeProperties object itself.
      */
@@ -87,7 +88,7 @@ public final class CustomActivityTypeProperties {
 
     /**
      * Get the resourceLinkedService property: Resource linked service reference.
-     *
+     * 
      * @return the resourceLinkedService value.
      */
     public LinkedServiceReference resourceLinkedService() {
@@ -96,7 +97,7 @@ public final class CustomActivityTypeProperties {
 
     /**
      * Set the resourceLinkedService property: Resource linked service reference.
-     *
+     * 
      * @param resourceLinkedService the resourceLinkedService value to set.
      * @return the CustomActivityTypeProperties object itself.
      */
@@ -107,7 +108,7 @@ public final class CustomActivityTypeProperties {
 
     /**
      * Get the folderPath property: Folder path for resource files Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the folderPath value.
      */
     public Object folderPath() {
@@ -116,7 +117,7 @@ public final class CustomActivityTypeProperties {
 
     /**
      * Set the folderPath property: Folder path for resource files Type: string (or Expression with resultType string).
-     *
+     * 
      * @param folderPath the folderPath value to set.
      * @return the CustomActivityTypeProperties object itself.
      */
@@ -127,7 +128,7 @@ public final class CustomActivityTypeProperties {
 
     /**
      * Get the referenceObjects property: Reference objects.
-     *
+     * 
      * @return the referenceObjects value.
      */
     public CustomActivityReferenceObject referenceObjects() {
@@ -136,7 +137,7 @@ public final class CustomActivityTypeProperties {
 
     /**
      * Set the referenceObjects property: Reference objects.
-     *
+     * 
      * @param referenceObjects the referenceObjects value to set.
      * @return the CustomActivityTypeProperties object itself.
      */
@@ -149,7 +150,7 @@ public final class CustomActivityTypeProperties {
      * Get the extendedProperties property: User defined property bag. There is no restriction on the keys or values
      * that can be used. The user specified custom activity has the full responsibility to consume and interpret the
      * content defined.
-     *
+     * 
      * @return the extendedProperties value.
      */
     public Map<String, Object> extendedProperties() {
@@ -160,7 +161,7 @@ public final class CustomActivityTypeProperties {
      * Set the extendedProperties property: User defined property bag. There is no restriction on the keys or values
      * that can be used. The user specified custom activity has the full responsibility to consume and interpret the
      * content defined.
-     *
+     * 
      * @param extendedProperties the extendedProperties value to set.
      * @return the CustomActivityTypeProperties object itself.
      */
@@ -172,7 +173,7 @@ public final class CustomActivityTypeProperties {
     /**
      * Get the retentionTimeInDays property: The retention time for the files submitted for custom activity. Type:
      * double (or Expression with resultType double).
-     *
+     * 
      * @return the retentionTimeInDays value.
      */
     public Object retentionTimeInDays() {
@@ -182,7 +183,7 @@ public final class CustomActivityTypeProperties {
     /**
      * Set the retentionTimeInDays property: The retention time for the files submitted for custom activity. Type:
      * double (or Expression with resultType double).
-     *
+     * 
      * @param retentionTimeInDays the retentionTimeInDays value to set.
      * @return the CustomActivityTypeProperties object itself.
      */
@@ -194,7 +195,7 @@ public final class CustomActivityTypeProperties {
     /**
      * Get the autoUserSpecification property: Elevation level and scope for the user, default is nonadmin task. Type:
      * string (or Expression with resultType double).
-     *
+     * 
      * @return the autoUserSpecification value.
      */
     public Object autoUserSpecification() {
@@ -204,7 +205,7 @@ public final class CustomActivityTypeProperties {
     /**
      * Set the autoUserSpecification property: Elevation level and scope for the user, default is nonadmin task. Type:
      * string (or Expression with resultType double).
-     *
+     * 
      * @param autoUserSpecification the autoUserSpecification value to set.
      * @return the CustomActivityTypeProperties object itself.
      */
@@ -215,15 +216,14 @@ public final class CustomActivityTypeProperties {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (command() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property command in model CustomActivityTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property command in model CustomActivityTypeProperties"));
         }
         if (resourceLinkedService() != null) {
             resourceLinkedService().validate();

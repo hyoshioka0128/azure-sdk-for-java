@@ -6,14 +6,28 @@ package com.azure.resourcemanager.datafactory.models;
 
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-/** A copy activity Salesforce Service Cloud sink. */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+/**
+ * A copy activity Salesforce Service Cloud sink.
+ */
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    property = "type",
+    defaultImpl = SalesforceServiceCloudSink.class,
+    visible = true)
 @JsonTypeName("SalesforceServiceCloudSink")
 @Fluent
 public final class SalesforceServiceCloudSink extends CopySink {
+    /*
+     * Copy sink type.
+     */
+    @JsonTypeId
+    @JsonProperty(value = "type", required = true)
+    private String type = "SalesforceServiceCloudSink";
+
     /*
      * The write behavior for the operation. Default is Insert.
      */
@@ -21,29 +35,36 @@ public final class SalesforceServiceCloudSink extends CopySink {
     private SalesforceSinkWriteBehavior writeBehavior;
 
     /*
-     * The name of the external ID field for upsert operation. Default value is 'Id' column. Type: string (or
-     * Expression with resultType string).
+     * The name of the external ID field for upsert operation. Default value is 'Id' column. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "externalIdFieldName")
     private Object externalIdFieldName;
 
     /*
-     * The flag indicating whether or not to ignore null values from input dataset (except key fields) during write
-     * operation. Default value is false. If set it to true, it means ADF will leave the data in the destination object
-     * unchanged when doing upsert/update operation and insert defined default value when doing insert operation,
-     * versus ADF will update the data in the destination object to NULL when doing upsert/update operation and insert
-     * NULL value when doing insert operation. Type: boolean (or Expression with resultType boolean).
+     * The flag indicating whether or not to ignore null values from input dataset (except key fields) during write operation. Default value is false. If set it to true, it means ADF will leave the data in the destination object unchanged when doing upsert/update operation and insert defined default value when doing insert operation, versus ADF will update the data in the destination object to NULL when doing upsert/update operation and insert NULL value when doing insert operation. Type: boolean (or Expression with resultType boolean).
      */
     @JsonProperty(value = "ignoreNullValues")
     private Object ignoreNullValues;
 
-    /** Creates an instance of SalesforceServiceCloudSink class. */
+    /**
+     * Creates an instance of SalesforceServiceCloudSink class.
+     */
     public SalesforceServiceCloudSink() {
     }
 
     /**
+     * Get the type property: Copy sink type.
+     * 
+     * @return the type value.
+     */
+    @Override
+    public String type() {
+        return this.type;
+    }
+
+    /**
      * Get the writeBehavior property: The write behavior for the operation. Default is Insert.
-     *
+     * 
      * @return the writeBehavior value.
      */
     public SalesforceSinkWriteBehavior writeBehavior() {
@@ -52,7 +73,7 @@ public final class SalesforceServiceCloudSink extends CopySink {
 
     /**
      * Set the writeBehavior property: The write behavior for the operation. Default is Insert.
-     *
+     * 
      * @param writeBehavior the writeBehavior value to set.
      * @return the SalesforceServiceCloudSink object itself.
      */
@@ -64,7 +85,7 @@ public final class SalesforceServiceCloudSink extends CopySink {
     /**
      * Get the externalIdFieldName property: The name of the external ID field for upsert operation. Default value is
      * 'Id' column. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the externalIdFieldName value.
      */
     public Object externalIdFieldName() {
@@ -74,7 +95,7 @@ public final class SalesforceServiceCloudSink extends CopySink {
     /**
      * Set the externalIdFieldName property: The name of the external ID field for upsert operation. Default value is
      * 'Id' column. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param externalIdFieldName the externalIdFieldName value to set.
      * @return the SalesforceServiceCloudSink object itself.
      */
@@ -90,7 +111,7 @@ public final class SalesforceServiceCloudSink extends CopySink {
      * when doing insert operation, versus ADF will update the data in the destination object to NULL when doing
      * upsert/update operation and insert NULL value when doing insert operation. Type: boolean (or Expression with
      * resultType boolean).
-     *
+     * 
      * @return the ignoreNullValues value.
      */
     public Object ignoreNullValues() {
@@ -104,7 +125,7 @@ public final class SalesforceServiceCloudSink extends CopySink {
      * when doing insert operation, versus ADF will update the data in the destination object to NULL when doing
      * upsert/update operation and insert NULL value when doing insert operation. Type: boolean (or Expression with
      * resultType boolean).
-     *
+     * 
      * @param ignoreNullValues the ignoreNullValues value to set.
      * @return the SalesforceServiceCloudSink object itself.
      */
@@ -113,42 +134,54 @@ public final class SalesforceServiceCloudSink extends CopySink {
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SalesforceServiceCloudSink withWriteBatchSize(Object writeBatchSize) {
         super.withWriteBatchSize(writeBatchSize);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SalesforceServiceCloudSink withWriteBatchTimeout(Object writeBatchTimeout) {
         super.withWriteBatchTimeout(writeBatchTimeout);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SalesforceServiceCloudSink withSinkRetryCount(Object sinkRetryCount) {
         super.withSinkRetryCount(sinkRetryCount);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SalesforceServiceCloudSink withSinkRetryWait(Object sinkRetryWait) {
         super.withSinkRetryWait(sinkRetryWait);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SalesforceServiceCloudSink withMaxConcurrentConnections(Object maxConcurrentConnections) {
         super.withMaxConcurrentConnections(maxConcurrentConnections);
         return this;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public SalesforceServiceCloudSink withDisableMetricsCollection(Object disableMetricsCollection) {
         super.withDisableMetricsCollection(disableMetricsCollection);
@@ -157,7 +190,7 @@ public final class SalesforceServiceCloudSink extends CopySink {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     @Override

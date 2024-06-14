@@ -6,9 +6,12 @@ package com.azure.resourcemanager.storage.models;
 
 import com.azure.core.annotation.Immutable;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.OffsetDateTime;
 
-/** A tag of the LegalHold of a blob container. */
+/**
+ * A tag of the LegalHold of a blob container.
+ */
 @Immutable
 public final class TagProperty {
     /*
@@ -40,6 +43,12 @@ public final class TagProperty {
      */
     @JsonProperty(value = "upn", access = JsonProperty.Access.WRITE_ONLY)
     private String upn;
+
+    /**
+     * Creates an instance of TagProperty class.
+     */
+    public TagProperty() {
+    }
 
     /**
      * Get the tag property: The tag value.

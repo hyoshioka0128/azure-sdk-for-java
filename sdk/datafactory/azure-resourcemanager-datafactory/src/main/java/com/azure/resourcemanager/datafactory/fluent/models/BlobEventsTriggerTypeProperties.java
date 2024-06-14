@@ -10,21 +10,19 @@ import com.azure.resourcemanager.datafactory.models.BlobEventTypes;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-/** Blob Events Trigger properties. */
+/**
+ * Blob Events Trigger properties.
+ */
 @Fluent
 public final class BlobEventsTriggerTypeProperties {
     /*
-     * The blob path must begin with the pattern provided for trigger to fire. For example, '/records/blobs/december/'
-     * will only fire the trigger for blobs in the december folder under the records container. At least one of these
-     * must be provided: blobPathBeginsWith, blobPathEndsWith.
+     * The blob path must begin with the pattern provided for trigger to fire. For example, '/records/blobs/december/' will only fire the trigger for blobs in the december folder under the records container. At least one of these must be provided: blobPathBeginsWith, blobPathEndsWith.
      */
     @JsonProperty(value = "blobPathBeginsWith")
     private String blobPathBeginsWith;
 
     /*
-     * The blob path must end with the pattern provided for trigger to fire. For example, 'december/boxes.csv' will
-     * only fire the trigger for blobs named boxes in a december folder. At least one of these must be provided:
-     * blobPathBeginsWith, blobPathEndsWith.
+     * The blob path must end with the pattern provided for trigger to fire. For example, 'december/boxes.csv' will only fire the trigger for blobs named boxes in a december folder. At least one of these must be provided: blobPathBeginsWith, blobPathEndsWith.
      */
     @JsonProperty(value = "blobPathEndsWith")
     private String blobPathEndsWith;
@@ -47,7 +45,9 @@ public final class BlobEventsTriggerTypeProperties {
     @JsonProperty(value = "scope", required = true)
     private String scope;
 
-    /** Creates an instance of BlobEventsTriggerTypeProperties class. */
+    /**
+     * Creates an instance of BlobEventsTriggerTypeProperties class.
+     */
     public BlobEventsTriggerTypeProperties() {
     }
 
@@ -55,7 +55,7 @@ public final class BlobEventsTriggerTypeProperties {
      * Get the blobPathBeginsWith property: The blob path must begin with the pattern provided for trigger to fire. For
      * example, '/records/blobs/december/' will only fire the trigger for blobs in the december folder under the records
      * container. At least one of these must be provided: blobPathBeginsWith, blobPathEndsWith.
-     *
+     * 
      * @return the blobPathBeginsWith value.
      */
     public String blobPathBeginsWith() {
@@ -66,7 +66,7 @@ public final class BlobEventsTriggerTypeProperties {
      * Set the blobPathBeginsWith property: The blob path must begin with the pattern provided for trigger to fire. For
      * example, '/records/blobs/december/' will only fire the trigger for blobs in the december folder under the records
      * container. At least one of these must be provided: blobPathBeginsWith, blobPathEndsWith.
-     *
+     * 
      * @param blobPathBeginsWith the blobPathBeginsWith value to set.
      * @return the BlobEventsTriggerTypeProperties object itself.
      */
@@ -79,7 +79,7 @@ public final class BlobEventsTriggerTypeProperties {
      * Get the blobPathEndsWith property: The blob path must end with the pattern provided for trigger to fire. For
      * example, 'december/boxes.csv' will only fire the trigger for blobs named boxes in a december folder. At least one
      * of these must be provided: blobPathBeginsWith, blobPathEndsWith.
-     *
+     * 
      * @return the blobPathEndsWith value.
      */
     public String blobPathEndsWith() {
@@ -90,7 +90,7 @@ public final class BlobEventsTriggerTypeProperties {
      * Set the blobPathEndsWith property: The blob path must end with the pattern provided for trigger to fire. For
      * example, 'december/boxes.csv' will only fire the trigger for blobs named boxes in a december folder. At least one
      * of these must be provided: blobPathBeginsWith, blobPathEndsWith.
-     *
+     * 
      * @param blobPathEndsWith the blobPathEndsWith value to set.
      * @return the BlobEventsTriggerTypeProperties object itself.
      */
@@ -101,7 +101,7 @@ public final class BlobEventsTriggerTypeProperties {
 
     /**
      * Get the ignoreEmptyBlobs property: If set to true, blobs with zero bytes will be ignored.
-     *
+     * 
      * @return the ignoreEmptyBlobs value.
      */
     public Boolean ignoreEmptyBlobs() {
@@ -110,7 +110,7 @@ public final class BlobEventsTriggerTypeProperties {
 
     /**
      * Set the ignoreEmptyBlobs property: If set to true, blobs with zero bytes will be ignored.
-     *
+     * 
      * @param ignoreEmptyBlobs the ignoreEmptyBlobs value to set.
      * @return the BlobEventsTriggerTypeProperties object itself.
      */
@@ -121,7 +121,7 @@ public final class BlobEventsTriggerTypeProperties {
 
     /**
      * Get the events property: The type of events that cause this trigger to fire.
-     *
+     * 
      * @return the events value.
      */
     public List<BlobEventTypes> events() {
@@ -130,7 +130,7 @@ public final class BlobEventsTriggerTypeProperties {
 
     /**
      * Set the events property: The type of events that cause this trigger to fire.
-     *
+     * 
      * @param events the events value to set.
      * @return the BlobEventsTriggerTypeProperties object itself.
      */
@@ -141,7 +141,7 @@ public final class BlobEventsTriggerTypeProperties {
 
     /**
      * Get the scope property: The ARM resource ID of the Storage Account.
-     *
+     * 
      * @return the scope value.
      */
     public String scope() {
@@ -150,7 +150,7 @@ public final class BlobEventsTriggerTypeProperties {
 
     /**
      * Set the scope property: The ARM resource ID of the Storage Account.
-     *
+     * 
      * @param scope the scope value to set.
      * @return the BlobEventsTriggerTypeProperties object itself.
      */
@@ -161,21 +161,19 @@ public final class BlobEventsTriggerTypeProperties {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (events() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property events in model BlobEventsTriggerTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property events in model BlobEventsTriggerTypeProperties"));
         }
         if (scope() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property scope in model BlobEventsTriggerTypeProperties"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property scope in model BlobEventsTriggerTypeProperties"));
         }
     }
 

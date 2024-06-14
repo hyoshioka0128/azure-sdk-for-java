@@ -16,6 +16,7 @@ import com.azure.monitor.opentelemetry.exporter.implementation.models.TelemetryI
 import com.azure.monitor.opentelemetry.exporter.implementation.utils.FormattedDuration;
 import com.azure.monitor.opentelemetry.exporter.implementation.utils.FormattedTime;
 import com.azure.monitor.opentelemetry.exporter.implementation.utils.UrlParser;
+import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.SpanId;
@@ -33,10 +34,13 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
+import static com.azure.monitor.opentelemetry.exporter.implementation.MappingsBuilder.MappingType.SPAN;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+// TODO (trask) can probably align dropping compatibility with old HTTP semconv with the release of
+//  Application Insights Java 4.0
 public final class SpanDataMapper {
 
     // visible for testing
@@ -57,6 +61,9 @@ public final class SpanDataMapper {
                 SemanticAttributes.DbSystemValues.HSQLDB,
                 SemanticAttributes.DbSystemValues.H2));
 
+    // this is needed until Azure SDK moves to latest OTel semantic conventions
+    private static final String COSMOS = "Cosmos";
+
     private static final Mappings MAPPINGS;
 
     // TODO (trask) add to generated ContextTagKeys class
@@ -64,7 +71,7 @@ public final class SpanDataMapper {
 
     static {
         MappingsBuilder mappingsBuilder =
-            new MappingsBuilder()
+            new MappingsBuilder(SPAN)
                 // these are from azure SDK (AZURE_SDK_PEER_ADDRESS gets filtered out automatically
                 // since it uses the otel "peer." prefix)
                 .ignoreExact(AiSemanticAttributes.AZURE_SDK_NAMESPACE.getKey())
@@ -73,7 +80,7 @@ public final class SpanDataMapper {
                 .ignoreExact(AiSemanticAttributes.KAFKA_RECORD_QUEUE_TIME_MS.getKey())
                 .ignoreExact(AiSemanticAttributes.KAFKA_OFFSET.getKey())
                 .exact(
-                    SemanticAttributes.HTTP_USER_AGENT.getKey(),
+                    SemanticAttributes.USER_AGENT_ORIGINAL.getKey(),
                     (builder, value) -> {
                         if (value instanceof String) {
                             builder.addTag("ai.user.userAgent", (String) value);
@@ -103,37 +110,41 @@ public final class SpanDataMapper {
     private final boolean captureHttpServer4xxAsError;
     private final BiConsumer<AbstractTelemetryBuilder, Resource> telemetryInitializer;
     private final BiPredicate<EventData, String> eventSuppressor;
+    private final BiPredicate<SpanData, EventData> shouldSuppress;
 
     public SpanDataMapper(
         boolean captureHttpServer4xxAsError,
         BiConsumer<AbstractTelemetryBuilder, Resource> telemetryInitializer,
-        BiPredicate<EventData, String> eventSuppressor) {
+        BiPredicate<EventData, String> eventSuppressor,
+        BiPredicate<SpanData, EventData> shouldSuppress) {
         this.captureHttpServer4xxAsError = captureHttpServer4xxAsError;
         this.telemetryInitializer = telemetryInitializer;
         this.eventSuppressor = eventSuppressor;
+        this.shouldSuppress = shouldSuppress;
     }
 
     public TelemetryItem map(SpanData span) {
-        long itemCount = getItemCount(span);
-        return map(span, itemCount);
+        Double sampleRate = getSampleRate(span);
+        return map(span, sampleRate);
     }
 
     public void map(SpanData span, Consumer<TelemetryItem> consumer) {
-        long itemCount = getItemCount(span);
-        TelemetryItem telemetryItem = map(span, itemCount);
+        Double sampleRate = getSampleRate(span);
+        TelemetryItem telemetryItem = map(span, sampleRate);
         consumer.accept(telemetryItem);
         exportEvents(
             span,
             telemetryItem.getTags().get(ContextTagKeys.AI_OPERATION_NAME.toString()),
-            itemCount,
+            sampleRate,
             consumer);
     }
 
-    public TelemetryItem map(SpanData span, long itemCount) {
+    // TODO looks like this method can be private
+    public TelemetryItem map(SpanData span, @Nullable Double sampleRate) {
         if (RequestChecker.isRequest(span)) {
-            return exportRequest(span, itemCount);
+            return exportRequest(span, sampleRate);
         } else {
-            return exportRemoteDependency(span, span.getKind() == SpanKind.INTERNAL, itemCount);
+            return exportRemoteDependency(span, span.getKind() == SpanKind.INTERNAL, sampleRate);
         }
     }
 
@@ -143,14 +154,14 @@ public final class SpanDataMapper {
         return isPreAggregatedStandardMetric != null && isPreAggregatedStandardMetric;
     }
 
-    private TelemetryItem exportRemoteDependency(SpanData span, boolean inProc, long itemCount) {
+    private TelemetryItem exportRemoteDependency(SpanData span, boolean inProc, @Nullable Double sampleRate) {
         RemoteDependencyTelemetryBuilder telemetryBuilder = RemoteDependencyTelemetryBuilder.create();
         telemetryInitializer.accept(telemetryBuilder, span.getResource());
 
         // set standard properties
         setOperationTags(telemetryBuilder, span);
         setTime(telemetryBuilder, span.getStartEpochNanos());
-        setItemCount(telemetryBuilder, itemCount);
+        setSampleRate(telemetryBuilder, sampleRate);
 
         // update tags
         MAPPINGS.map(span.getAttributes(), telemetryBuilder);
@@ -165,6 +176,8 @@ public final class SpanDataMapper {
         telemetryBuilder.setSuccess(getSuccess(span));
 
         if (inProc) {
+            // TODO (trask) need to handle Cosmos INTERNAL spans
+            // see https://github.com/microsoft/ApplicationInsights-Java/pull/2906/files#r1104981386
             telemetryBuilder.setType("InProc");
         } else {
             applySemanticConventions(telemetryBuilder, span);
@@ -179,23 +192,14 @@ public final class SpanDataMapper {
 
     private static final Set<String> DEFAULT_HTTP_SPAN_NAMES =
         new HashSet<>(
-            asList(
-                "HTTP OPTIONS",
-                "HTTP GET",
-                "HTTP HEAD",
-                "HTTP POST",
-                "HTTP PUT",
-                "HTTP DELETE",
-                "HTTP TRACE",
-                "HTTP CONNECT",
-                "HTTP PATCH"));
+            asList("OPTIONS", "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "CONNECT", "PATCH"));
 
     // the backend product prefers more detailed (but possibly infinite cardinality) name for http
     // dependencies
     private static String getDependencyName(SpanData span) {
         String name = span.getName();
 
-        String method = span.getAttributes().get(SemanticAttributes.HTTP_METHOD);
+        String method = getStableOrOldAttribute(span.getAttributes(), SemanticAttributes.HTTP_REQUEST_METHOD, SemanticAttributes.HTTP_METHOD);
         if (method == null) {
             return name;
         }
@@ -204,7 +208,7 @@ public final class SpanDataMapper {
             return name;
         }
 
-        String url = span.getAttributes().get(SemanticAttributes.HTTP_URL);
+        String url = getStableOrOldAttribute(span.getAttributes(), SemanticAttributes.URL_FULL, SemanticAttributes.HTTP_URL);
         if (url == null) {
             return name;
         }
@@ -219,7 +223,7 @@ public final class SpanDataMapper {
     private static void applySemanticConventions(
         RemoteDependencyTelemetryBuilder telemetryBuilder, SpanData span) {
         Attributes attributes = span.getAttributes();
-        String httpMethod = attributes.get(SemanticAttributes.HTTP_METHOD);
+        String httpMethod = getStableOrOldAttribute(attributes, SemanticAttributes.HTTP_REQUEST_METHOD, SemanticAttributes.HTTP_METHOD);
         if (httpMethod != null) {
             applyHttpClientSpan(telemetryBuilder, attributes);
             return;
@@ -230,6 +234,10 @@ public final class SpanDataMapper {
             return;
         }
         String dbSystem = attributes.get(SemanticAttributes.DB_SYSTEM);
+        if (dbSystem == null) {
+            // special case needed until Azure SDK moves to latest OTel semantic conventions
+            dbSystem = attributes.get(AiSemanticAttributes.AZURE_SDK_DB_TYPE);
+        }
         if (dbSystem != null) {
             applyDatabaseClientSpan(telemetryBuilder, dbSystem, attributes);
             return;
@@ -242,7 +250,7 @@ public final class SpanDataMapper {
 
         // passing max value because we don't know what the default port would be in this case,
         // so we always want the port included
-        String target = getTargetOrNull(attributes, Integer.MAX_VALUE);
+        String target = getTargetOrDefault(attributes, Integer.MAX_VALUE, null);
         if (target != null) {
             telemetryBuilder.setTarget(target);
             return;
@@ -300,16 +308,19 @@ public final class SpanDataMapper {
     private static void applyHttpClientSpan(
         RemoteDependencyTelemetryBuilder telemetryBuilder, Attributes attributes) {
 
-        String httpUrl = attributes.get(SemanticAttributes.HTTP_URL);
+        String httpUrl = getStableOrOldAttribute(attributes, SemanticAttributes.URL_FULL, SemanticAttributes.HTTP_URL);
         int defaultPort = getDefaultPortForHttpUrl(httpUrl);
         String target = getTargetOrDefault(attributes, defaultPort, "Http");
 
         telemetryBuilder.setType("Http");
         telemetryBuilder.setTarget(target);
 
-        Long httpStatusCode = attributes.get(SemanticAttributes.HTTP_STATUS_CODE);
+        Long httpStatusCode = getStableOrOldAttribute(attributes, SemanticAttributes.HTTP_RESPONSE_STATUS_CODE, SemanticAttributes.HTTP_STATUS_CODE);
         if (httpStatusCode != null) {
             telemetryBuilder.setResultCode(Long.toString(httpStatusCode));
+        } else {
+            // https://1dsdocs.azurewebsites.net/schema/Mappings/AzureMonitor-AI.html#remotedependencyresultcode
+            telemetryBuilder.setResultCode("0");
         }
 
         telemetryBuilder.setData(httpUrl);
@@ -338,12 +349,33 @@ public final class SpanDataMapper {
 
     public static String getTargetOrDefault(
         Attributes attributes, int defaultPort, String defaultTarget) {
-        String target = getTargetOrNull(attributes, defaultPort);
-        return target != null ? target : defaultTarget;
+        String target = getTargetOrNullStableSemconv(attributes, defaultPort);
+        if (target != null) {
+            return target;
+        }
+        target = getTargetOrNullOldSemconv(attributes, defaultPort);
+        if (target != null) {
+            return target;
+        }
+        return defaultTarget;
     }
 
     @Nullable
-    private static String getTargetOrNull(Attributes attributes, int defaultPort) {
+    private static String getTargetOrNullStableSemconv(Attributes attributes, int defaultPort) {
+        String peerService = attributes.get(SemanticAttributes.PEER_SERVICE); // this isn't part of stable semconv, but still has priority for now
+        if (peerService != null) {
+            return peerService;
+        }
+        String host = attributes.get(SemanticAttributes.SERVER_ADDRESS);
+        if (host != null) {
+            Long port = attributes.get(SemanticAttributes.SERVER_PORT);
+            return getTarget(host, port, defaultPort);
+        }
+        return null;
+    }
+
+    @Nullable
+    private static String getTargetOrNullOldSemconv(Attributes attributes, int defaultPort) {
         String peerService = attributes.get(SemanticAttributes.PEER_SERVICE);
         if (peerService != null) {
             return peerService;
@@ -353,12 +385,12 @@ public final class SpanDataMapper {
             Long port = attributes.get(SemanticAttributes.NET_PEER_PORT);
             return getTarget(host, port, defaultPort);
         }
-        host = attributes.get(AiSemanticAttributes.NET_SOCK_PEER_NAME);
+        host = attributes.get(SemanticAttributes.NET_SOCK_PEER_NAME);
         if (host == null) {
-            host = attributes.get(AiSemanticAttributes.NET_SOCK_PEER_ADDR);
+            host = attributes.get(SemanticAttributes.NET_SOCK_PEER_ADDR);
         }
         if (host != null) {
-            Long port = attributes.get(AiSemanticAttributes.NET_SOCK_PEER_PORT);
+            Long port = attributes.get(SemanticAttributes.NET_SOCK_PEER_PORT);
             return getTarget(host, port, defaultPort);
         }
         String httpUrl = attributes.get(SemanticAttributes.HTTP_URL);
@@ -393,16 +425,31 @@ public final class SpanDataMapper {
             } else {
                 type = "SQL";
             }
+        } else if (dbSystem.equals(COSMOS)) {
+            // this has special icon in portal (documentdb was the old name for cosmos)
+            type = "Microsoft.DocumentDb";
         } else {
             type = dbSystem;
         }
         telemetryBuilder.setType(type);
         telemetryBuilder.setData(dbStatement);
-        String target =
-            nullAwareConcat(
-                getTargetOrDefault(attributes, getDefaultPortForDbSystem(dbSystem), dbSystem),
-                attributes.get(SemanticAttributes.DB_NAME),
-                " | ");
+
+        String target;
+        String dbName;
+        if (dbSystem.equals(COSMOS)) {
+            // special case needed until Azure SDK moves to latest OTel semantic conventions
+            String dbUrl = attributes.get(AiSemanticAttributes.AZURE_SDK_DB_URL);
+            if (dbUrl != null) {
+                target = UrlParser.getTarget(dbUrl);
+            } else {
+                target = null;
+            }
+            dbName = attributes.get(AiSemanticAttributes.AZURE_SDK_DB_INSTANCE);
+        } else {
+            target = getTargetOrDefault(attributes, getDefaultPortForDbSystem(dbSystem), dbSystem);
+            dbName = attributes.get(SemanticAttributes.DB_NAME);
+        }
+        target = nullAwareConcat(target, dbName, " | ");
         if (target == null) {
             target = dbSystem;
         }
@@ -455,7 +502,7 @@ public final class SpanDataMapper {
         }
     }
 
-    private TelemetryItem exportRequest(SpanData span, long itemCount) {
+    private TelemetryItem exportRequest(SpanData span, @Nullable Double sampleRate) {
         RequestTelemetryBuilder telemetryBuilder = RequestTelemetryBuilder.create();
         telemetryInitializer.accept(telemetryBuilder, span.getResource());
 
@@ -465,7 +512,7 @@ public final class SpanDataMapper {
         // set standard properties
         telemetryBuilder.setId(span.getSpanId());
         setTime(telemetryBuilder, startEpochNanos);
-        setItemCount(telemetryBuilder, itemCount);
+        setSampleRate(telemetryBuilder, sampleRate);
 
         // update tags
         MAPPINGS.map(attributes, telemetryBuilder);
@@ -502,7 +549,7 @@ public final class SpanDataMapper {
             telemetryBuilder.setUrl(httpUrl);
         }
 
-        Long httpStatusCode = attributes.get(SemanticAttributes.HTTP_STATUS_CODE);
+        Long httpStatusCode = getStableOrOldAttribute(attributes, SemanticAttributes.HTTP_RESPONSE_STATUS_CODE, SemanticAttributes.HTTP_STATUS_CODE);
         if (httpStatusCode == null) {
             httpStatusCode = attributes.get(SemanticAttributes.RPC_GRPC_STATUS_CODE);
         }
@@ -512,10 +559,10 @@ public final class SpanDataMapper {
             telemetryBuilder.setResponseCode("0");
         }
 
-        String locationIp = attributes.get(SemanticAttributes.HTTP_CLIENT_IP);
+        String locationIp = getStableOrOldAttribute(attributes, SemanticAttributes.CLIENT_ADDRESS, SemanticAttributes.HTTP_CLIENT_IP);
         if (locationIp == null) {
             // only use net.peer.ip if http.client_ip is not available
-            locationIp = attributes.get(AiSemanticAttributes.NET_SOCK_PEER_ADDR);
+            locationIp = attributes.get(SemanticAttributes.NET_SOCK_PEER_ADDR);
         }
         if (locationIp != null) {
             telemetryBuilder.addTag(ContextTagKeys.AI_LOCATION_IP.toString(), locationIp);
@@ -572,7 +619,7 @@ public final class SpanDataMapper {
                 return true;
             case UNSET:
                 if (captureHttpServer4xxAsError) {
-                    Long statusCode = span.getAttributes().get(SemanticAttributes.HTTP_STATUS_CODE);
+                    Long statusCode = getStableOrOldAttribute(span.getAttributes(), SemanticAttributes.HTTP_RESPONSE_STATUS_CODE, SemanticAttributes.HTTP_STATUS_CODE);
                     return statusCode == null || statusCode < 400;
                 }
                 return true;
@@ -582,6 +629,60 @@ public final class SpanDataMapper {
 
     @Nullable
     public static String getHttpUrlFromServerSpan(Attributes attributes) {
+        String httpUrl = getHttpUrlFromServerSpanStableSemconv(attributes);
+        if (httpUrl != null) {
+            return httpUrl;
+        }
+        return getHttpUrlFromServerSpanOldSemconv(attributes);
+    }
+
+    @Nullable
+    private static String getHttpUrlFromServerSpanStableSemconv(Attributes attributes) {
+        String scheme = attributes.get(SemanticAttributes.URL_SCHEME);
+        if (scheme == null) {
+            return null;
+        }
+        String host = attributes.get(SemanticAttributes.SERVER_ADDRESS);
+        if (host == null) {
+            return null;
+        }
+        Long port = attributes.get(SemanticAttributes.SERVER_PORT);
+        String path = attributes.get(SemanticAttributes.URL_PATH);
+        if (path == null) {
+            return null;
+        }
+        String query = attributes.get(SemanticAttributes.URL_QUERY);
+
+        int len = scheme.length() + host.length() + path.length();
+        if (port != null) {
+            len += 6; // max 5 digits for port plus the port separator ":"
+        }
+        if (query != null) {
+            len += query.length() + 1; // including the query separator "?"
+        }
+
+        StringBuilder sb = new StringBuilder(len);
+        sb.append(scheme);
+        sb.append("://");
+        sb.append(host);
+        if (port != null && port > 0 && !isDefaultPortForScheme(port, scheme)) {
+            sb.append(':');
+            sb.append(port);
+        }
+        sb.append(path);
+        if (query != null) {
+            sb.append('?');
+            sb.append(query);
+        }
+        return sb.toString();
+    }
+
+    private static boolean isDefaultPortForScheme(Long port, String scheme) {
+        return (port == 80 && scheme.equals("http")) || (port == 443 && scheme.equals("https"));
+    }
+
+    @Nullable
+    private static String getHttpUrlFromServerSpanOldSemconv(Attributes attributes) {
         String httpUrl = attributes.get(SemanticAttributes.HTTP_URL);
         if (httpUrl != null) {
             return httpUrl;
@@ -595,14 +696,6 @@ public final class SpanDataMapper {
             return null;
         }
         String host = attributes.get(SemanticAttributes.NET_HOST_NAME);
-        if (host == null) {
-            // fall back to deprecated http.host if available
-            host = attributes.get(SemanticAttributes.HTTP_HOST);
-            if (host == null) {
-                return null;
-            }
-            return scheme + "://" + host + target;
-        }
         Long port = attributes.get(SemanticAttributes.NET_HOST_PORT);
         if (port != null && port > 0) {
             return scheme + "://" + host + ":" + port + target;
@@ -642,8 +735,8 @@ public final class SpanDataMapper {
         // TODO (trask) AI mapping: should this pass default port for messaging.system?
         String source =
             nullAwareConcat(
-                getTargetOrNull(attributes, 0),
-                attributes.get(SemanticAttributes.MESSAGING_DESTINATION),
+                getTargetOrNullOldSemconv(attributes, Integer.MAX_VALUE),
+                attributes.get(SemanticAttributes.MESSAGING_DESTINATION_NAME),
                 "/");
         if (source != null) {
             return source;
@@ -662,13 +755,7 @@ public final class SpanDataMapper {
         if (operationName != null) {
             return operationName;
         }
-
-        String spanName = span.getName();
-        String httpMethod = span.getAttributes().get(SemanticAttributes.HTTP_METHOD);
-        if (httpMethod != null && !httpMethod.isEmpty() && spanName.startsWith("/")) {
-            return httpMethod + " " + spanName;
-        }
-        return spanName;
+        return span.getName();
     }
 
     private static String nullAwareConcat(
@@ -685,7 +772,7 @@ public final class SpanDataMapper {
     private void exportEvents(
         SpanData span,
         @Nullable String operationName,
-        long itemCount,
+        @Nullable Double sampleRate,
         Consumer<TelemetryItem> consumer) {
         for (EventData event : span.getEvents()) {
             String instrumentationScopeName = span.getInstrumentationScopeInfo().getName();
@@ -701,9 +788,11 @@ public final class SpanDataMapper {
                 if (!parentSpanContext.isValid() || parentSpanContext.isRemote()) {
                     // TODO (trask) map OpenTelemetry exception to Application Insights exception better
                     String stacktrace = event.getAttributes().get(SemanticAttributes.EXCEPTION_STACKTRACE);
-                    if (stacktrace != null) {
-                        consumer.accept(
-                            createExceptionTelemetryItem(stacktrace, span, operationName, itemCount));
+                    if (stacktrace != null && !shouldSuppress.test(span, event)) {
+                        String exceptionLogged = span.getAttributes().get(AiSemanticAttributes.LOGGED_EXCEPTION);
+                        if (!stacktrace.equals(exceptionLogged)) {
+                            consumer.accept(createExceptionTelemetryItem(event.getAttributes().get(SemanticAttributes.EXCEPTION_STACKTRACE), span, operationName, sampleRate));
+                        }
                     }
                 }
                 return;
@@ -721,7 +810,7 @@ public final class SpanDataMapper {
                 setOperationName(telemetryBuilder, span.getAttributes());
             }
             setTime(telemetryBuilder, event.getEpochNanos());
-            setItemCount(telemetryBuilder, itemCount);
+            setSampleRate(telemetryBuilder, sampleRate);
 
             // update tags
             MAPPINGS.map(event.getAttributes(), telemetryBuilder);
@@ -734,7 +823,7 @@ public final class SpanDataMapper {
     }
 
     private TelemetryItem createExceptionTelemetryItem(
-        String errorStack, SpanData span, @Nullable String operationName, long itemCount) {
+        String errorStack, SpanData span, @Nullable String operationName, @Nullable Double sampleRate) {
 
         ExceptionTelemetryBuilder telemetryBuilder = ExceptionTelemetryBuilder.create();
         telemetryInitializer.accept(telemetryBuilder, span.getResource());
@@ -748,7 +837,7 @@ public final class SpanDataMapper {
             setOperationName(telemetryBuilder, span.getAttributes());
         }
         setTime(telemetryBuilder, span.getEndEpochNanos());
-        setItemCount(telemetryBuilder, itemCount);
+        setSampleRate(telemetryBuilder, sampleRate);
 
         MAPPINGS.map(span.getAttributes(), telemetryBuilder);
 
@@ -758,19 +847,28 @@ public final class SpanDataMapper {
         return telemetryBuilder.build();
     }
 
+
+    public static <T> T getStableOrOldAttribute(Attributes attributes, AttributeKey<T> stable, AttributeKey<T> old) {
+        T value = attributes.get(stable);
+        if (value != null) {
+            return value;
+        }
+        return attributes.get(old);
+    }
+
     private static void setTime(AbstractTelemetryBuilder telemetryBuilder, long epochNanos) {
         telemetryBuilder.setTime(FormattedTime.offSetDateTimeFromEpochNanos(epochNanos));
     }
 
-    private static void setItemCount(AbstractTelemetryBuilder telemetryBuilder, long itemCount) {
-        if (itemCount != 1) {
-            telemetryBuilder.setSampleRate(100.0f / itemCount);
+    private static void setSampleRate(AbstractTelemetryBuilder telemetryBuilder, @Nullable Double sampleRate) {
+        if (sampleRate != null) {
+            telemetryBuilder.setSampleRate(sampleRate.floatValue());
         }
     }
 
-    private static long getItemCount(SpanData span) {
-        Long itemCount = span.getAttributes().get(AiSemanticAttributes.ITEM_COUNT);
-        return itemCount == null ? 1 : itemCount;
+    @Nullable
+    private static Double getSampleRate(SpanData span) {
+        return span.getAttributes().get(AiSemanticAttributes.SAMPLE_RATE);
     }
 
     private static void addLinks(AbstractTelemetryBuilder telemetryBuilder, List<LinkData> links) {
@@ -816,6 +914,7 @@ public final class SpanDataMapper {
         applyConnectionStringAndRoleNameOverrides(mappingsBuilder);
     }
 
+    @SuppressWarnings("deprecation") // used to emit warning to users
     private static final WarningLogger connectionStringAttributeNoLongerSupported =
         new WarningLogger(
             SpanDataMapper.class,
@@ -825,6 +924,8 @@ public final class SpanDataMapper {
                 + " \"connectionStringOverrides\" configuration, or reach out to"
                 + " https://github.com/microsoft/ApplicationInsights-Java/issues if you have a"
                 + " different use case.");
+
+    @SuppressWarnings("deprecation") // used to emit warning to users
     private static final WarningLogger roleNameAttributeNoLongerSupported =
         new WarningLogger(
             SpanDataMapper.class,
@@ -834,6 +935,8 @@ public final class SpanDataMapper {
                 + " \"roleNameOverrides\" configuration, or reach out to"
                 + " https://github.com/microsoft/ApplicationInsights-Java/issues if you have a"
                 + " different use case.");
+
+    @SuppressWarnings("deprecation") // used to emit warning to users
     private static final WarningLogger roleInstanceAttributeNoLongerSupported =
         new WarningLogger(
             SpanDataMapper.class,
@@ -842,6 +945,8 @@ public final class SpanDataMapper {
                 + " is incompatible with pre-aggregated standard metrics. Please reach out to"
                 + " https://github.com/microsoft/ApplicationInsights-Java/issues if you have a use"
                 + " case for this.");
+
+    @SuppressWarnings("deprecation") // used to emit warning to users
     private static final WarningLogger instrumentationKeyAttributeNoLongerSupported =
         new WarningLogger(
             SpanDataMapper.class,
@@ -852,6 +957,7 @@ public final class SpanDataMapper {
                 + " https://github.com/microsoft/ApplicationInsights-Java/issues if you have a"
                 + " different use case.");
 
+    @SuppressWarnings("deprecation") // used to emit warning to users
     static void applyConnectionStringAndRoleNameOverrides(MappingsBuilder mappingsBuilder) {
         mappingsBuilder
             .exact(

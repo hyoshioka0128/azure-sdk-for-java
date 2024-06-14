@@ -10,27 +10,32 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeId;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.util.HashMap;
 import java.util.Map;
 
-/** The format definition of a storage. */
-@JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
-    property = "type",
-    defaultImpl = DatasetStorageFormat.class)
+/**
+ * The format definition of a storage.
+ */
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", defaultImpl = DatasetStorageFormat.class, visible = true)
 @JsonTypeName("DatasetStorageFormat")
 @JsonSubTypes({
     @JsonSubTypes.Type(name = "TextFormat", value = TextFormat.class),
     @JsonSubTypes.Type(name = "JsonFormat", value = JsonFormat.class),
     @JsonSubTypes.Type(name = "AvroFormat", value = AvroFormat.class),
     @JsonSubTypes.Type(name = "OrcFormat", value = OrcFormat.class),
-    @JsonSubTypes.Type(name = "ParquetFormat", value = ParquetFormat.class)
-})
+    @JsonSubTypes.Type(name = "ParquetFormat", value = ParquetFormat.class) })
 @Fluent
 public class DatasetStorageFormat {
+    /*
+     * Type of dataset storage format.
+     */
+    @JsonTypeId
+    @JsonProperty(value = "type", required = true)
+    private String type;
+
     /*
      * Serializer. Type: string (or Expression with resultType string).
      */
@@ -46,15 +51,28 @@ public class DatasetStorageFormat {
     /*
      * The format definition of a storage.
      */
-    @JsonIgnore private Map<String, Object> additionalProperties;
+    @JsonIgnore
+    private Map<String, Object> additionalProperties;
 
-    /** Creates an instance of DatasetStorageFormat class. */
+    /**
+     * Creates an instance of DatasetStorageFormat class.
+     */
     public DatasetStorageFormat() {
+        this.type = "DatasetStorageFormat";
+    }
+
+    /**
+     * Get the type property: Type of dataset storage format.
+     * 
+     * @return the type value.
+     */
+    public String type() {
+        return this.type;
     }
 
     /**
      * Get the serializer property: Serializer. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the serializer value.
      */
     public Object serializer() {
@@ -63,7 +81,7 @@ public class DatasetStorageFormat {
 
     /**
      * Set the serializer property: Serializer. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param serializer the serializer value to set.
      * @return the DatasetStorageFormat object itself.
      */
@@ -74,7 +92,7 @@ public class DatasetStorageFormat {
 
     /**
      * Get the deserializer property: Deserializer. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the deserializer value.
      */
     public Object deserializer() {
@@ -83,7 +101,7 @@ public class DatasetStorageFormat {
 
     /**
      * Set the deserializer property: Deserializer. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param deserializer the deserializer value to set.
      * @return the DatasetStorageFormat object itself.
      */
@@ -94,7 +112,7 @@ public class DatasetStorageFormat {
 
     /**
      * Get the additionalProperties property: The format definition of a storage.
-     *
+     * 
      * @return the additionalProperties value.
      */
     @JsonAnyGetter
@@ -104,7 +122,7 @@ public class DatasetStorageFormat {
 
     /**
      * Set the additionalProperties property: The format definition of a storage.
-     *
+     * 
      * @param additionalProperties the additionalProperties value to set.
      * @return the DatasetStorageFormat object itself.
      */
@@ -123,7 +141,7 @@ public class DatasetStorageFormat {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {

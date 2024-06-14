@@ -8,57 +8,28 @@ import com.azure.core.http.HttpMethod;
 import com.azure.core.http.HttpRequest;
 import com.azure.core.test.utils.TestUtils;
 import com.azure.core.util.FluxUtil;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.function.Tuple2;
 import reactor.util.function.Tuples;
 
-import java.security.SecureRandom;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.azure.core.http.vertx.VertxHttpClientLocalTestServer.EXPECTED_GET_BYTES;
+import static com.azure.core.http.vertx.VertxHttpClientLocalTestServer.GET_ENDPOINT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Execution(ExecutionMode.SAME_THREAD)
 public class DeadlockTests {
-    private static final String GET_ENDPOINT = "/get";
-
-    private WireMockServer server;
-    private byte[] expectedGetBytes;
-
-    @BeforeEach
-    public void configureWireMockServer() {
-        expectedGetBytes = new byte[32768];
-        new SecureRandom().nextBytes(expectedGetBytes);
-
-        server = new WireMockServer(WireMockConfiguration.options()
-            .dynamicPort()
-            .disableRequestJournal()
-            .gzipDisabled(true));
-
-        server.stubFor(get(GET_ENDPOINT).willReturn(aResponse().withBody(expectedGetBytes)));
-
-        server.start();
-    }
-
-    @AfterEach
-    public void shutdownWireMockServer() {
-        if (server != null) {
-            server.shutdown();
-        }
-    }
-
     @Test
     public void attemptToDeadlock() {
         HttpClient httpClient = new VertxAsyncHttpClientProvider().createInstance();
 
-        String endpoint = server.baseUrl() + GET_ENDPOINT;
+        String endpoint = VertxHttpClientLocalTestServer.getServer().getHttpUri() + GET_ENDPOINT;
 
         Mono<Tuple2<byte[], Integer>> request = httpClient.send(new HttpRequest(HttpMethod.GET, endpoint))
             .flatMap(response -> FluxUtil.collectBytesInByteBufferStream(response.getBody(), 32768)
@@ -74,7 +45,7 @@ public class DeadlockTests {
 
         for (Tuple2<byte[], Integer> result : results) {
             assertEquals(200, result.getT2());
-            TestUtils.assertArraysEqual(expectedGetBytes, result.getT1());
+            TestUtils.assertArraysEqual(EXPECTED_GET_BYTES, result.getT1());
         }
     }
 }

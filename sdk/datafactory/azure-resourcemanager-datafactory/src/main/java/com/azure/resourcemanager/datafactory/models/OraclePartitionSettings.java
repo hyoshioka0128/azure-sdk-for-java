@@ -7,43 +7,44 @@ package com.azure.resourcemanager.datafactory.models;
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** The settings that will be leveraged for Oracle source partitioning. */
+/**
+ * The settings that will be leveraged for Oracle source partitioning.
+ */
 @Fluent
 public final class OraclePartitionSettings {
     /*
-     * Names of the physical partitions of Oracle table.
+     * Names of the physical partitions of Oracle table. 
      */
     @JsonProperty(value = "partitionNames")
     private Object partitionNames;
 
     /*
-     * The name of the column in integer type that will be used for proceeding range partitioning. Type: string (or
-     * Expression with resultType string).
+     * The name of the column in integer type that will be used for proceeding range partitioning. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "partitionColumnName")
     private Object partitionColumnName;
 
     /*
-     * The maximum value of column specified in partitionColumnName that will be used for proceeding range
-     * partitioning. Type: string (or Expression with resultType string).
+     * The maximum value of column specified in partitionColumnName that will be used for proceeding range partitioning. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "partitionUpperBound")
     private Object partitionUpperBound;
 
     /*
-     * The minimum value of column specified in partitionColumnName that will be used for proceeding range
-     * partitioning. Type: string (or Expression with resultType string).
+     * The minimum value of column specified in partitionColumnName that will be used for proceeding range partitioning. Type: string (or Expression with resultType string).
      */
     @JsonProperty(value = "partitionLowerBound")
     private Object partitionLowerBound;
 
-    /** Creates an instance of OraclePartitionSettings class. */
+    /**
+     * Creates an instance of OraclePartitionSettings class.
+     */
     public OraclePartitionSettings() {
     }
 
     /**
      * Get the partitionNames property: Names of the physical partitions of Oracle table.
-     *
+     * 
      * @return the partitionNames value.
      */
     public Object partitionNames() {
@@ -52,7 +53,7 @@ public final class OraclePartitionSettings {
 
     /**
      * Set the partitionNames property: Names of the physical partitions of Oracle table.
-     *
+     * 
      * @param partitionNames the partitionNames value to set.
      * @return the OraclePartitionSettings object itself.
      */
@@ -64,7 +65,7 @@ public final class OraclePartitionSettings {
     /**
      * Get the partitionColumnName property: The name of the column in integer type that will be used for proceeding
      * range partitioning. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the partitionColumnName value.
      */
     public Object partitionColumnName() {
@@ -74,7 +75,7 @@ public final class OraclePartitionSettings {
     /**
      * Set the partitionColumnName property: The name of the column in integer type that will be used for proceeding
      * range partitioning. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param partitionColumnName the partitionColumnName value to set.
      * @return the OraclePartitionSettings object itself.
      */
@@ -86,7 +87,7 @@ public final class OraclePartitionSettings {
     /**
      * Get the partitionUpperBound property: The maximum value of column specified in partitionColumnName that will be
      * used for proceeding range partitioning. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the partitionUpperBound value.
      */
     public Object partitionUpperBound() {
@@ -96,7 +97,7 @@ public final class OraclePartitionSettings {
     /**
      * Set the partitionUpperBound property: The maximum value of column specified in partitionColumnName that will be
      * used for proceeding range partitioning. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param partitionUpperBound the partitionUpperBound value to set.
      * @return the OraclePartitionSettings object itself.
      */
@@ -108,7 +109,7 @@ public final class OraclePartitionSettings {
     /**
      * Get the partitionLowerBound property: The minimum value of column specified in partitionColumnName that will be
      * used for proceeding range partitioning. Type: string (or Expression with resultType string).
-     *
+     * 
      * @return the partitionLowerBound value.
      */
     public Object partitionLowerBound() {
@@ -118,7 +119,7 @@ public final class OraclePartitionSettings {
     /**
      * Set the partitionLowerBound property: The minimum value of column specified in partitionColumnName that will be
      * used for proceeding range partitioning. Type: string (or Expression with resultType string).
-     *
+     * 
      * @param partitionLowerBound the partitionLowerBound value to set.
      * @return the OraclePartitionSettings object itself.
      */
@@ -129,7 +130,7 @@ public final class OraclePartitionSettings {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {

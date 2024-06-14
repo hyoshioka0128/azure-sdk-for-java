@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import wiremock.com.google.common.base.Objects;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -86,7 +86,7 @@ public class ExpandableStringEnumTests {
      */
     @Test
     public void validateHashCode() {
-        assertEquals(Objects.hashCode(TestStringEnum.class, "test"), TestStringEnum.fromString("test").hashCode());
+        assertEquals(Objects.hash(TestStringEnum.class, "test"), TestStringEnum.fromString("test").hashCode());
     }
 
     /**
@@ -102,14 +102,11 @@ public class ExpandableStringEnumTests {
         TestStringEnum testStringEnum = TestStringEnum.fromString("test");
         TestStringEnum2 testStringEnum2 = TestStringEnum2.fromString("test");
 
-        return Stream.of(
-            Arguments.of(testStringEnum, null, false),
-            Arguments.of(testStringEnum, testStringEnum2, false),
-            Arguments.of(testStringEnum, testStringEnum, true),
+        return Stream.of(Arguments.of(testStringEnum, null, false),
+            Arguments.of(testStringEnum, testStringEnum2, false), Arguments.of(testStringEnum, testStringEnum, true),
             Arguments.of(testStringEnum2, testStringEnum2, true),
             Arguments.of(testStringEnum, TestStringEnum.fromString("test"), true),
-            Arguments.of(testStringEnum, TestStringEnum.fromString("test2"), false)
-        );
+            Arguments.of(testStringEnum, TestStringEnum.fromString("test2"), false));
     }
 
     public static final class TestStringEnum extends ExpandableStringEnum<TestStringEnum> {

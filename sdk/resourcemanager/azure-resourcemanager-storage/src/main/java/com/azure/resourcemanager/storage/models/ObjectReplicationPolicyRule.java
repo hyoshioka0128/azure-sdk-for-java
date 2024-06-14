@@ -8,12 +8,13 @@ import com.azure.core.annotation.Fluent;
 import com.azure.core.util.logging.ClientLogger;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** The replication policy rule between two containers. */
+/**
+ * The replication policy rule between two containers.
+ */
 @Fluent
 public final class ObjectReplicationPolicyRule {
     /*
-     * Rule Id is auto-generated for each new rule on destination account. It is required for put policy on source
-     * account.
+     * Rule Id is auto-generated for each new rule on destination account. It is required for put policy on source account.
      */
     @JsonProperty(value = "ruleId")
     private String ruleId;
@@ -37,9 +38,15 @@ public final class ObjectReplicationPolicyRule {
     private ObjectReplicationPolicyFilter filters;
 
     /**
+     * Creates an instance of ObjectReplicationPolicyRule class.
+     */
+    public ObjectReplicationPolicyRule() {
+    }
+
+    /**
      * Get the ruleId property: Rule Id is auto-generated for each new rule on destination account. It is required for
      * put policy on source account.
-     *
+     * 
      * @return the ruleId value.
      */
     public String ruleId() {
@@ -49,7 +56,7 @@ public final class ObjectReplicationPolicyRule {
     /**
      * Set the ruleId property: Rule Id is auto-generated for each new rule on destination account. It is required for
      * put policy on source account.
-     *
+     * 
      * @param ruleId the ruleId value to set.
      * @return the ObjectReplicationPolicyRule object itself.
      */
@@ -60,7 +67,7 @@ public final class ObjectReplicationPolicyRule {
 
     /**
      * Get the sourceContainer property: Required. Source container name.
-     *
+     * 
      * @return the sourceContainer value.
      */
     public String sourceContainer() {
@@ -69,7 +76,7 @@ public final class ObjectReplicationPolicyRule {
 
     /**
      * Set the sourceContainer property: Required. Source container name.
-     *
+     * 
      * @param sourceContainer the sourceContainer value to set.
      * @return the ObjectReplicationPolicyRule object itself.
      */
@@ -80,7 +87,7 @@ public final class ObjectReplicationPolicyRule {
 
     /**
      * Get the destinationContainer property: Required. Destination container name.
-     *
+     * 
      * @return the destinationContainer value.
      */
     public String destinationContainer() {
@@ -89,7 +96,7 @@ public final class ObjectReplicationPolicyRule {
 
     /**
      * Set the destinationContainer property: Required. Destination container name.
-     *
+     * 
      * @param destinationContainer the destinationContainer value to set.
      * @return the ObjectReplicationPolicyRule object itself.
      */
@@ -100,7 +107,7 @@ public final class ObjectReplicationPolicyRule {
 
     /**
      * Get the filters property: Optional. An object that defines the filter set.
-     *
+     * 
      * @return the filters value.
      */
     public ObjectReplicationPolicyFilter filters() {
@@ -109,7 +116,7 @@ public final class ObjectReplicationPolicyRule {
 
     /**
      * Set the filters property: Optional. An object that defines the filter set.
-     *
+     * 
      * @param filters the filters value to set.
      * @return the ObjectReplicationPolicyRule object itself.
      */
@@ -120,21 +127,19 @@ public final class ObjectReplicationPolicyRule {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {
         if (sourceContainer() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property sourceContainer in model ObjectReplicationPolicyRule"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property sourceContainer in model ObjectReplicationPolicyRule"));
         }
         if (destinationContainer() == null) {
-            throw LOGGER
-                .logExceptionAsError(
-                    new IllegalArgumentException(
-                        "Missing required property destinationContainer in model ObjectReplicationPolicyRule"));
+            throw LOGGER.atError()
+                .log(new IllegalArgumentException(
+                    "Missing required property destinationContainer in model ObjectReplicationPolicyRule"));
         }
         if (filters() != null) {
             filters().validate();

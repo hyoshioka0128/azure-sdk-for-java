@@ -1,5 +1,7 @@
 # Azure Purview Catalog client library for Java
 
+Please note, this package has been deprecated and will no longer be maintained after 06/01/2024. We encourage you to upgrade to the replacement package, `com.azure/azure-analytics-purview-datamap`, to continue receiving updates. Refer to the [migration guide](https://aka.ms/azsdk/java/migrate/purview-datamap) for guidance on upgrading. Refer to our deprecation policy (https://aka.ms/azsdk/support-policies) for more details.
+
 Azure Purview Catalog is a fully managed cloud service whose users can discover the data sources they need and understand the data sources they find. At the same time, Data Catalog helps organizations get more value from their existing investments.
 
 - Search for data using technical or business terms
@@ -49,7 +51,7 @@ To use the [DefaultAzureCredential][DefaultAzureCredential] provider shown below
 <dependency>
     <groupId>com.azure</groupId>
     <artifactId>azure-identity</artifactId>
-    <version>1.9.1</version>
+    <version>1.12.2</version>
 </dependency>
 ```
 [//]: # ({x-version-update-end})
@@ -97,7 +99,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct][coc]. For m
 [azure_identity]: https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/identity/azure-identity
 [DefaultAzureCredential]: https://github.com/Azure/azure-sdk-for-java/blob/main/sdk/identity/azure-identity/README.md#defaultazurecredential
 [jdk_link]: https://docs.microsoft.com/java/azure/jdk/?view=azure-java-stable
-[package]: https://mvnrepository.com/artifact/com.azure/azure-analytics-purview-catalog
+[package]: https://central.sonatype.com/artifact/com.azure/azure-analytics-purview-catalog
 [samples_readme]: https://github.com/Azure/azure-sdk-for-java/tree/main/sdk/purview/azure-analytics-purview-catalog/src/samples/README.md
 [protocol_method]: https://github.com/Azure/azure-sdk-for-java/wiki/Protocol-Methods
 [create_azure_purview_account]: https://docs.microsoft.com/azure/purview/create-catalog-portal

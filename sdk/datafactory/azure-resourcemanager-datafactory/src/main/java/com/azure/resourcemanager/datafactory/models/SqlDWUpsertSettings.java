@@ -7,7 +7,9 @@ package com.azure.resourcemanager.datafactory.models;
 import com.azure.core.annotation.Fluent;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/** Sql DW upsert option settings. */
+/**
+ * Sql DW upsert option settings.
+ */
 @Fluent
 public final class SqlDWUpsertSettings {
     /*
@@ -17,20 +19,21 @@ public final class SqlDWUpsertSettings {
     private Object interimSchemaName;
 
     /*
-     * Key column names for unique row identification. Type: array of strings (or Expression with resultType array of
-     * strings).
+     * Key column names for unique row identification. Type: array of strings (or Expression with resultType array of strings).
      */
     @JsonProperty(value = "keys")
     private Object keys;
 
-    /** Creates an instance of SqlDWUpsertSettings class. */
+    /**
+     * Creates an instance of SqlDWUpsertSettings class.
+     */
     public SqlDWUpsertSettings() {
     }
 
     /**
      * Get the interimSchemaName property: Schema name for interim table. Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @return the interimSchemaName value.
      */
     public Object interimSchemaName() {
@@ -40,7 +43,7 @@ public final class SqlDWUpsertSettings {
     /**
      * Set the interimSchemaName property: Schema name for interim table. Type: string (or Expression with resultType
      * string).
-     *
+     * 
      * @param interimSchemaName the interimSchemaName value to set.
      * @return the SqlDWUpsertSettings object itself.
      */
@@ -52,7 +55,7 @@ public final class SqlDWUpsertSettings {
     /**
      * Get the keys property: Key column names for unique row identification. Type: array of strings (or Expression with
      * resultType array of strings).
-     *
+     * 
      * @return the keys value.
      */
     public Object keys() {
@@ -62,7 +65,7 @@ public final class SqlDWUpsertSettings {
     /**
      * Set the keys property: Key column names for unique row identification. Type: array of strings (or Expression with
      * resultType array of strings).
-     *
+     * 
      * @param keys the keys value to set.
      * @return the SqlDWUpsertSettings object itself.
      */
@@ -73,7 +76,7 @@ public final class SqlDWUpsertSettings {
 
     /**
      * Validates the instance.
-     *
+     * 
      * @throws IllegalArgumentException thrown if the instance is not valid.
      */
     public void validate() {

@@ -6,7 +6,6 @@ import com.azure.cosmos.BridgeInternal;
 import com.azure.cosmos.ConsistencyLevel;
 import com.azure.cosmos.CosmosContainerProactiveInitConfig;
 import com.azure.cosmos.CosmosException;
-import com.azure.cosmos.implementation.apachecommons.lang.NotImplementedException;
 import com.azure.cosmos.implementation.apachecommons.lang.StringUtils;
 import com.azure.cosmos.implementation.caches.RxClientCollectionCache;
 import com.azure.cosmos.implementation.caches.RxPartitionKeyRangeCache;
@@ -15,6 +14,7 @@ import com.azure.cosmos.implementation.directconnectivity.HttpUtils;
 import com.azure.cosmos.implementation.directconnectivity.RequestHelper;
 import com.azure.cosmos.implementation.directconnectivity.StoreResponse;
 import com.azure.cosmos.implementation.directconnectivity.WebExceptionUtility;
+import com.azure.cosmos.implementation.faultinjection.GatewayServerErrorInjector;
 import com.azure.cosmos.implementation.faultinjection.IFaultInjectorProvider;
 import com.azure.cosmos.implementation.http.HttpClient;
 import com.azure.cosmos.implementation.http.HttpHeaders;
@@ -25,6 +25,9 @@ import com.azure.cosmos.implementation.routing.PartitionKeyInternal;
 import com.azure.cosmos.implementation.routing.PartitionKeyInternalHelper;
 import com.azure.cosmos.implementation.throughputControl.ThroughputControlStore;
 import com.azure.cosmos.models.CosmosContainerIdentity;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
@@ -35,7 +38,6 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +55,6 @@ import static com.azure.cosmos.implementation.HttpConstants.HttpHeaders.INTENDED
  * Used internally to provide functionality to communicate and process response from GATEWAY in the Azure Cosmos DB database service.
  */
 public class RxGatewayStoreModel implements RxStoreModel {
-    private final static byte[] EMPTY_BYTE_ARRAY = {};
     private final DiagnosticsClientContext clientContext;
     private final Logger logger = LoggerFactory.getLogger(RxGatewayStoreModel.class);
     private final Map<String, String> defaultHeaders;
@@ -67,6 +68,7 @@ public class RxGatewayStoreModel implements RxStoreModel {
     private RxPartitionKeyRangeCache partitionKeyRangeCache;
     private GatewayServiceConfigurationReader gatewayServiceConfigurationReader;
     private RxClientCollectionCache collectionCache;
+    private GatewayServerErrorInjector gatewayServerErrorInjector;
 
     public RxGatewayStoreModel(
         DiagnosticsClientContext clientContext,
@@ -110,6 +112,17 @@ public class RxGatewayStoreModel implements RxStoreModel {
         this.sessionContainer = sessionContainer;
     }
 
+    public RxGatewayStoreModel(RxGatewayStoreModel inner) {
+        this.clientContext = inner.clientContext;
+        this.defaultHeaders = inner.defaultHeaders;
+        this.defaultConsistencyLevel = inner.defaultConsistencyLevel;
+        this.globalEndpointManager = inner.globalEndpointManager;
+        this.queryCompatibilityMode = inner.queryCompatibilityMode;
+
+        this.httpClient = inner.httpClient;
+        this.sessionContainer = inner.sessionContainer;
+    }
+
     void setGatewayServiceConfigurationReader(GatewayServiceConfigurationReader gatewayServiceConfigurationReader) {
         this.gatewayServiceConfigurationReader = gatewayServiceConfigurationReader;
     }
@@ -120,6 +133,10 @@ public class RxGatewayStoreModel implements RxStoreModel {
 
     public void setUseMultipleWriteLocations(boolean useMultipleWriteLocations) {
         this.useMultipleWriteLocations = useMultipleWriteLocations;
+    }
+
+    public void setSessionContainer(ISessionContainer sessionContainer) {
+        this.sessionContainer = sessionContainer;
     }
 
     boolean isUseMultipleWriteLocations() {
@@ -208,7 +225,7 @@ public class RxGatewayStoreModel implements RxStoreModel {
             request.requestContext.resourcePhysicalAddress = uri.toString();
 
             if (this.throughputControlStore != null) {
-                return this.throughputControlStore.processRequest(request, performRequestInternal(request, method, uri));
+                return this.throughputControlStore.processRequest(request, Mono.defer(() -> this.performRequestInternal(request, method, uri)));
             }
 
             return this.performRequestInternal(request, method, uri);
@@ -239,14 +256,14 @@ public class RxGatewayStoreModel implements RxStoreModel {
                 httpHeaders,
                 contentAsByteArray);
 
-            Duration responseTimeout = Duration.ofSeconds(Configs.getHttpResponseTimeoutInSeconds());
-            if (OperationType.QueryPlan.equals(request.getOperationType())) {
-                responseTimeout = Duration.ofSeconds(Configs.getQueryPlanResponseTimeoutInSeconds());
-            } else if (request.isAddressRefresh()) {
-                responseTimeout = Duration.ofSeconds(Configs.getAddressRefreshResponseTimeoutInSeconds());
+            Mono<HttpResponse> httpResponseMono = this.httpClient.send(httpRequest, request.getResponseTimeout());
+
+            if (this.gatewayServerErrorInjector != null) {
+                httpResponseMono = this.gatewayServerErrorInjector.injectGatewayErrors(request.getResponseTimeout(),
+                    httpRequest, request, httpResponseMono);
+                return toDocumentServiceResponse(httpResponseMono, request, httpRequest);
             }
 
-            Mono<HttpResponse> httpResponseMono = this.httpClient.send(httpRequest, responseTimeout);
             return toDocumentServiceResponse(httpResponseMono, request, httpRequest);
 
         } catch (Exception e) {
@@ -336,9 +353,9 @@ public class RxGatewayStoreModel implements RxStoreModel {
             HttpHeaders httpResponseHeaders = httpResponse.headers();
             int httpResponseStatus = httpResponse.statusCode();
 
-            Mono<byte[]> contentObservable = httpResponse
-                .bodyAsByteArray()
-                .switchIfEmpty(Mono.just(EMPTY_BYTE_ARRAY));
+            Mono<ByteBuf> contentObservable = httpResponse
+                .body()
+                .switchIfEmpty(Mono.just(Unpooled.EMPTY_BUFFER));
 
             return contentObservable
                 .map(content -> {
@@ -351,12 +368,38 @@ public class RxGatewayStoreModel implements RxStoreModel {
                     // If there is any error in the header response this throws exception
                     validateOrThrow(request, HttpResponseStatus.valueOf(httpResponseStatus), httpResponseHeaders, content);
 
-                    StoreResponse rsp = new StoreResponse(httpResponseStatus,
-                        HttpUtils.unescape(httpResponseHeaders.toMap()),
-                        content);
+                    StoreResponse rsp;
+
+                    int size;
+                    if ((size = content.readableBytes()) > 0) {
+                        rsp = new StoreResponse(httpResponseStatus,
+                            HttpUtils.unescape(httpResponseHeaders.toMap()),
+                            new ByteBufInputStream(content, true),
+                            size);
+                    } else {
+                        rsp = new StoreResponse(httpResponseStatus,
+                            HttpUtils.unescape(httpResponseHeaders.toMap()),
+                            null,
+                            0);
+                    }
+
                     if (reactorNettyRequestRecord != null) {
                         rsp.setRequestTimeline(reactorNettyRequestRecord.takeTimelineSnapshot());
+
+                        if (this.gatewayServerErrorInjector != null) {
+                            // only configure when fault injection is used
+                            rsp.setFaultInjectionRuleId(
+                                request
+                                    .faultInjectionRequestContext
+                                    .getFaultInjectionRuleId(reactorNettyRequestRecord.getTransportRequestId()));
+
+                            rsp.setFaultInjectionRuleEvaluationResults(
+                                request
+                                    .faultInjectionRequestContext
+                                    .getFaultInjectionRuleEvaluationResults(reactorNettyRequestRecord.getTransportRequestId()));
+                        }
                     }
+
                     if (request.requestContext.cosmosDiagnostics != null) {
                         BridgeInternal.recordGatewayResponse(request.requestContext.cosmosDiagnostics, request, rsp, globalEndpointManager);
                     }
@@ -389,7 +432,7 @@ public class RxGatewayStoreModel implements RxStoreModel {
             CosmosException dce;
             if (!(exception instanceof CosmosException)) {
                 // wrap in CosmosException
-                logger.error("Network failure", exception);
+                logger.warn("Network failure", exception);
 
                 int statusCode = 0;
                 if (WebExceptionUtility.isNetworkFailure(exception)) {
@@ -416,7 +459,24 @@ public class RxGatewayStoreModel implements RxStoreModel {
 
             if (request.requestContext.cosmosDiagnostics != null) {
                 if (httpRequest.reactorNettyRequestRecord() != null) {
-                    BridgeInternal.setRequestTimeline(dce, httpRequest.reactorNettyRequestRecord().takeTimelineSnapshot());
+                    ReactorNettyRequestRecord reactorNettyRequestRecord = httpRequest.reactorNettyRequestRecord();
+                    BridgeInternal.setRequestTimeline(dce, reactorNettyRequestRecord.takeTimelineSnapshot());
+
+                    ImplementationBridgeHelpers
+                        .CosmosExceptionHelper
+                        .getCosmosExceptionAccessor()
+                        .setFaultInjectionRuleId(
+                            dce,
+                            request.faultInjectionRequestContext
+                                .getFaultInjectionRuleId(reactorNettyRequestRecord.getTransportRequestId()));
+
+                    ImplementationBridgeHelpers
+                        .CosmosExceptionHelper
+                        .getCosmosExceptionAccessor()
+                        .setFaultInjectionEvaluationResults(
+                            dce,
+                            request.faultInjectionRequestContext
+                                .getFaultInjectionRuleEvaluationResults(reactorNettyRequestRecord.getTransportRequestId()));
                 }
 
                 BridgeInternal.recordGatewayResponse(request.requestContext.cosmosDiagnostics, request, dce, globalEndpointManager);
@@ -429,7 +489,7 @@ public class RxGatewayStoreModel implements RxStoreModel {
     private void validateOrThrow(RxDocumentServiceRequest request,
                                  HttpResponseStatus status,
                                  HttpHeaders headers,
-                                 byte[] bodyAsBytes) {
+                                 ByteBuf bodyAsByteBuf) {
 
         int statusCode = status.code();
 
@@ -438,7 +498,7 @@ public class RxGatewayStoreModel implements RxStoreModel {
                 ? status.reasonPhrase().replace(" ", "")
                 : "";
 
-            String body = bodyAsBytes != null ? new String(bodyAsBytes, StandardCharsets.UTF_8) : null;
+            String body = bodyAsByteBuf != null ?bodyAsByteBuf.toString(StandardCharsets.UTF_8) : null;
             CosmosError cosmosError;
             cosmosError = (StringUtils.isNotEmpty(body)) ? new CosmosError(body) : new CosmosError();
             cosmosError = new CosmosError(statusCodeString,
@@ -483,9 +543,12 @@ public class RxGatewayStoreModel implements RxStoreModel {
     }
 
     private Mono<RxDocumentServiceResponse> invokeAsync(RxDocumentServiceRequest request) {
-
         Callable<Mono<RxDocumentServiceResponse>> funcDelegate = () -> invokeAsyncInternal(request).single();
-        return BackoffRetryUtility.executeRetry(funcDelegate, new WebExceptionRetryPolicy(BridgeInternal.getRetryContext(request.requestContext.cosmosDiagnostics)));
+
+        MetadataRequestRetryPolicy metadataRequestRetryPolicy = new MetadataRequestRetryPolicy(this.globalEndpointManager);
+        metadataRequestRetryPolicy.onBeforeSendRequest(request);
+
+        return BackoffRetryUtility.executeRetry(funcDelegate, metadataRequestRetryPolicy);
     }
 
     @Override
@@ -526,8 +589,7 @@ public class RxGatewayStoreModel implements RxStoreModel {
 
     @Override
     public void enableThroughputControl(ThroughputControlStore throughputControlStore) {
-        // no-op
-        // Disable throughput control for gateway mode
+        this.throughputControlStore = throughputControlStore;
     }
 
     @Override
@@ -536,8 +598,12 @@ public class RxGatewayStoreModel implements RxStoreModel {
     }
 
     @Override
-    public void configureFaultInjectorProvider(IFaultInjectorProvider injectorProvider) {
-        throw new NotImplementedException("configureFaultInjectorProvider is not supported in RxGatewayStoreModel");
+    public void configureFaultInjectorProvider(IFaultInjectorProvider injectorProvider, Configs configs) {
+        if (this.gatewayServerErrorInjector == null) {
+            this.gatewayServerErrorInjector = new GatewayServerErrorInjector(configs, collectionCache, partitionKeyRangeCache);
+        }
+
+        this.gatewayServerErrorInjector.registerServerErrorInjector(injectorProvider.getServerErrorInjector());
     }
 
     @Override
@@ -673,6 +739,9 @@ public class RxGatewayStoreModel implements RxStoreModel {
                                 .getEffectivePartitionKeyString(
                                     partitionKeyInternal,
                                     collectionValueHolder.v.getPartitionKey());
+
+                            request.setEffectivePartitionKey(effectivePartitionKeyString);
+
                             PartitionKeyRange range =
                                 collectionRoutingMapValueHolder.v.getRangeByEffectivePartitionKey(effectivePartitionKeyString);
                             request.requestContext.resolvedPartitionKeyRange = range;

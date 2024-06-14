@@ -73,7 +73,9 @@ public class HttpURLConnectionHttpClient implements HttpClient {
             }
         }
     }
-    private void createConnection(HttpURLConnection connection, HttpRequest request, Context context) throws IOException {
+
+    private void createConnection(HttpURLConnection connection, HttpRequest request, Context context)
+        throws IOException {
         connection.setRequestMethod(request.getHttpMethod().name());
         setHeadersOnRequest(request, connection);
         setBodyOnRequest(request, connection, Contexts.with(context).getHttpRequestProgressReporter());
@@ -116,7 +118,7 @@ public class HttpURLConnectionHttpClient implements HttpClient {
             for (HttpHeader header : headers) {
                 String name = header.getName();
 
-                connection.setRequestProperty(name, header.getValue());
+                header.getValuesList().forEach(value -> connection.addRequestProperty(name, value));
             }
         }
     }
@@ -165,8 +167,8 @@ public class HttpURLConnectionHttpClient implements HttpClient {
 
                 }
 
-                throw new UncheckedIOException(String.format("Connection failed: %s, %s", responseCode,
-                    responseMessage), e);
+                throw new UncheckedIOException(
+                    String.format("Connection failed: %s, %s", responseCode, responseMessage), e);
             }
         }
 

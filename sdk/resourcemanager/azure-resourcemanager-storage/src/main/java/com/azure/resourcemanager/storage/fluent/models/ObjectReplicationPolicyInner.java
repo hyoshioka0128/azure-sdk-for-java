@@ -8,10 +8,13 @@ import com.azure.core.annotation.Fluent;
 import com.azure.core.management.ProxyResource;
 import com.azure.resourcemanager.storage.models.ObjectReplicationPolicyRule;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 
-/** The replication policy between two storage accounts. Multiple rules can be defined in one policy. */
+/**
+ * The replication policy between two storage accounts. Multiple rules can be defined in one policy.
+ */
 @Fluent
 public final class ObjectReplicationPolicyInner extends ProxyResource {
     /*
@@ -19,6 +22,12 @@ public final class ObjectReplicationPolicyInner extends ProxyResource {
      */
     @JsonProperty(value = "properties")
     private ObjectReplicationPolicyProperties innerProperties;
+
+    /**
+     * Creates an instance of ObjectReplicationPolicyInner class.
+     */
+    public ObjectReplicationPolicyInner() {
+    }
 
     /**
      * Get the innerProperties property: Returns the Storage Account Object Replication Policy.
